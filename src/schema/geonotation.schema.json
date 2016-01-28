@@ -1,0 +1,256 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "IGeoAltitudeMode": {
+      "type": "object",
+      "description" : "Defined how the alititude value in an IGeoLocation alt property will be inerpreted",
+      "properties": {
+        "altitudeMode": {
+          "enum": ["clampToGround", "relativeToGround", "absolute"]
+        }
+      }
+    },
+    "IGeoTimeStamp": {
+      "type": "object",
+      "description" : "Defines a point in time that something occured, was created, or was last updated.",
+      "properties": {
+        "when": {
+          "description": "value in epoc milliseconds in UTC with a 0 offset - ZULU Time",
+          "type": "number"
+        }
+      },
+      "required": ["when"]
+    },
+    "IGeoTimeSpan": {
+      "type": "object",
+      "description" : "Defines a range in time that represents a beginning and end.",
+      "properties": {
+        "begin": {
+          "description": "staring date time value in epoc milliseconds in UTC with a 0 offset - ZULU Time",
+          "type": "number"
+        },
+        "end": {
+          "description": "ending date time value in epoc milliseconds in UTC with a 0 offset - ZULU Time",
+          "type": "number"
+        }
+      },
+      "required": ["begin", "end"]
+    },
+    "IGeoLocation": {
+      "type": "object",
+      "description" : "Defines a specific geospatial location dreived using WGS-84 latitude Longitude",
+      "properties": {
+        "lat": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "lon": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "alt": {
+          "type": "number",
+          "description" : "A value in meters representing the altitude of the associated location.  This will be interpreted base on the altitudeMode provided in the IGeoAltitudeMode enumeration"
+        }
+      },
+      "required": ["lat", "lon", "alt"]
+    },
+    "IGeoLocationList": {
+      "type": "object",
+      "description" : "An ordered list of Locations representing a 1 or more Locations with an associated IGeoAltitudeMode to interpret the altitude values.  In the case of a point, a inslge Location will create a single icon, wheras mulitple locations will create the same icon at multiple locations to be interpreted as a composite feature. For consistency, and IGeoRenderables use an IGeoLocationList even when only containing a single location",
+      "allOf": [{
+        "$ref": "#/definitions/IGeoAltitudeMode"
+      }, {
+        "properties": {
+          "locations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/IGeoLocation"
+            }
+          }
+        }
+      }]
+    },
+    "IGeoLocationListCollection": {
+      "type": "object",
+      "description" : "An ordered collection of IGeoLocationList",
+      "properties": {
+        "locations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IGeoLocationList"
+          }
+        }
+      }
+    },
+    "IGeoView": {
+      "type": "object",
+      "allOf": [{
+        "$ref": "#/definitions/IGeoRenderable"
+      }, {
+        "properties": {
+          "tilt": {
+            "type": "number"
+          },
+          "roll": {
+            "type": "number"
+          },
+          "heading": {
+            "type": "number"
+          },
+          "viewMode": {
+            "enum": ["camera", "lookat"]
+          }
+        }
+      }],
+      "required": ["lat", "lon", "alt", "heading", "viewMode"]
+    },
+    "IGeoLineStyle": {
+      "type": "object",
+      "properties": {
+        "LineColor": {
+          "$ref": "#/definitions/IGeoColor"
+        },
+        "linePattern": {
+          "enum": ["solid", "dashed", "dotted"]
+        }
+      },
+      "required": ["lineColor", "linePattern"]
+    },
+    "IGeoPolyStyle": {
+      "type": "object",
+      "properties": {
+        "fillColor": {
+          "$ref": "#/definitions/IGeoColor"
+        },
+        "fillPattern": {
+          "enum": ["solid", "dashed", "dotted"]
+        }
+      },
+      "required": ["fillColor"]
+    },
+    "IGeoIconStyle": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "description": "Pixel size in pixels.  If the icon is not square, the size will represent the larger value of the rectangle",
+          "type": "number",
+          "minimum": 1
+        },
+        "offSetX": {
+          "description": "X Offest of icon in pixels derived from the center point of the icon",
+          "type": "number",
+          "default": 0
+        },
+        "offSetY": {
+          "description": "X Offest of icon in pixels derived from the center point of the icon",
+          "type": "number",
+          "default": 0
+        }
+      },
+      "required": ["fillColor"]
+    },
+    "IGeoBufferable": {
+      "type": "object",
+      "description" : "Indicates if a buffer object in meters can be applied to a single, or list of locations as an extension outwards from the original location(s)",
+      "properties": {
+        "buffer": {
+          "type": "number"
+        }
+      },
+      "required": ["buffer"]
+    },
+    "IGeoImage": {
+      "type": "object",
+      "properties": {
+        "imageURI": {
+          "type": "string"
+        },
+        "alpha": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["imageURI", "alpha"]
+    },
+    "IGeoContainer": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IGeoContainer"
+          }
+        }
+      },
+      "required": ["children"]
+    },
+    "IGeoRenderable": {
+      "type": "object",
+      "allOf": [{
+        "$ref": "#/definitions/IGeoLocationList"
+      }, {
+        "$ref": "#/definitions/IGeoContainer"
+      }]
+    },
+    "IGeoPoint": {
+      "allOf": [{
+        "$ref": "#/definitions/IGeoRenderable"
+      }, {
+        "$ref": "#/definitions/IGeoImage"
+      }, {
+        "$ref": "#/definitions/IGeoBufferable"
+      }, {
+        "properties": {
+          "iconStyle": {
+            "ref": "#/definitions/IGeoIconStyle"
+          }
+        },
+        "required": ["iconStyle"]
+      }]
+    },
+    "IGeoLine": {
+      "allOf": [{
+        "$ref": "#/definitions/IGeoRenderable"
+      }, {
+        "$ref": "#/definitions/IGeoBufferable"
+      }, {
+        "properties": {
+          "lineStyle": {
+            "ref": "#/definitions/IGeoLineStyle"
+          }
+        },
+        "required": ["lineStyle"]
+      }]
+    },
+    "IGeoPolygon": {
+      "allOf": [{
+        "$ref": "#/definitions/IGeoRenderable"
+      }, {
+        "$ref": "#/definitions/IGeoBufferable"
+      }, {
+        "properties": {
+          "lineStyle": {
+            "ref": "#/definitions/IGeoLineStyle"
+          },
+          "polyStyle": {
+            "ref": "#/definitions/IGeoPolyStyle"
+          }
+        },
+        "required": ["lineStyle", "polyStyle"]
+      }]
+    }
+  }
+}
