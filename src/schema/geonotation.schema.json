@@ -3,8 +3,9 @@
   "definitions": {
     "IGeoAltitudeMode": {
       "type": "object",
-      "description": "Defined how the alititude value in an IGeoLocation alt (altitude) property will be inerpreted",
+      "description": "Define how the alititude value in an IGeoLocation alt (altitude) property will be interpreted",
       "properties": {
+        "description": "Enumeration of altitutde modes",
         "altitudeMode": {
           "enum": ["clampToGround", "relativeToGround", "absolute"]
         },
@@ -39,9 +40,10 @@
     },
     "IGeoLocation": {
       "type": "object",
-      "description": "Defines a specific geospatial location dreived using WGS-84 latitude Longitude",
+      "description": "Defines a specific geospatial location derived using WGS-84 latitude Longitude",
       "properties": {
         "lat": {
+          "description": "Latitude value in degrees decimal (i.e. 23.4567) derived from a WGS-84 datum",
           "type": "number",
           "minimum": -90,
           "maximum": 90
@@ -96,30 +98,69 @@
         }
       }
     },
-    "IGeoView": {
+    "IGeoCamera": {
       "type": "object",
-      "properties": {
-        "tilt": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 179
-        },
-        "roll": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 179
-        },
-        "heading": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 359
-        },
-        "viewMode": {
-          "enum": ["camera", "lookat"],
-          "default": "lookat"
+      "description": "Defines the virtual camera that views the scene. This element defines the position of the camera relative to the Earth's surface as well as the viewing direction of the camera. The camera position is defined by <longitude>, <latitude>, <altitude>, and either <altitudeMode>. The viewing direction of the camera is defined by <heading>, <tilt>, and <roll>. An IGeoCamera provides full six-degrees-of-freedom control over the view, so you can position the Camera in space and then rotate it around the X, Y, and Z axes. Most importantly, you can tilt the camera view so that you're looking above the horizon into the sky. The order of rotation is important. By default, the camera is looking straight down the −Z axis toward the Earth. Before rotations are performed, the camera is translated along the Z axis to <altitude>. The order of transformations is as follows: <altitude> - translate along the Z axis to <altitude><heading> - rotate around the Z axis.<tilt> - rotate around the X axis.<roll> - rotate around the Z axis (again). Note that each time a rotation is applied, two of the camera axes change their orientation.",
+      "allOf": [{
+        "$ref": "#/definitions/IGeoAltitudeMode"
+      }, {
+        "$ref": "#/definitions/IGeoLocation"
+      }, {
+        "properties": {
+          "tilt": {
+            "type": "number",
+            "description": "Rotation, in degrees, of the camera around the X axis. A value of 0 indicates that the view is aimed straight down toward the earth (the most common case). A value for 90 for <tilt> indicates that the view is aimed toward the horizon. Values greater than 90 indicate that the view is pointed up into the sky. Values for <tilt> are clamped at +180 degrees",
+            "minimum": 0,
+            "maximum": 179
+          },
+          "roll": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 179,
+            "description": "Rotation, in degrees, of the camera around the Z axis. Values range from −180 to +180 degrees"
+          },
+          "heading": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 359,
+            "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). Values range from 0 to 360 degrees"
+          },
+          "range": {
+            "type": "number",
+            "description": "Distance in meters from the point specified by <longitude>, <latitude>, and <altitude> to the LookAt position"
+          }
         }
-      },
-      "required": ["lat", "lon", "alt", "heading", "viewMode"]
+      }],
+      "required": ["lat", "lon", "alt", "heading"]
+    },
+    "IGeoLookAt": {
+      "type": "object",
+      "description": "The LookAt element positions the 'camera' in relation to the IGeoLocation that is being viewed",
+      "allOf": [{
+        "$ref": "#/definitions/IGeoAltitudeMode"
+      }, {
+        "$ref": "#/definitions/IGeoLocation"
+      }, {
+        "properties": {
+          "tilt": {
+            "type": "number",
+            "description": "Rotation, in degrees, of the camera around the X axis. A value of 0 indicates that the view is aimed straight down toward the earth (the most common case). A value for 90 for <tilt> indicates that the view is aimed toward the horizon. Values greater than 90 indicate that the view is pointed up into the sky. Values for <tilt> are clamped at +180 degrees. ",
+            "minimum": 0,
+            "maximum": 179
+          },
+          "heading": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 359,
+            "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). (See diagram below.) Values range from 0 to 360 degrees"
+          },
+          "range": {
+            "type": "number",
+            "description": "Distance in meters from the point specified by IGeoLocation to the LookAt position"
+          }
+        }
+      }],
+      "required": ["lat", "lon", "alt", "heading"]
     },
     "IGeoBounds": {
       "type": "object",
@@ -246,7 +287,6 @@
       },
       "required": ["name", "id", "description"]
     },
-
     "IGeoContainer": {
       "type": "object",
       "allOf": [{
@@ -281,7 +321,7 @@
       }, {
         "properties": {
           "iconStyle": {
-            "ref": "#/definitions/IGeoIconStyle"
+            "$ref": "#/definitions/IGeoIconStyle"
           }
         },
         "required": ["iconStyle"]
@@ -295,7 +335,7 @@
       }, {
         "properties": {
           "lineStyle": {
-            "ref": "#/definitions/IGeoLineStyle"
+            "$ref": "#/definitions/IGeoLineStyle"
           }
         },
         "required": ["lineStyle"]
@@ -309,10 +349,10 @@
       }, {
         "properties": {
           "lineStyle": {
-            "ref": "#/definitions/IGeoLineStyle"
+            "$ref": "#/definitions/IGeoLineStyle"
           },
           "polyStyle": {
-            "ref": "#/definitions/IGeoPolyStyle"
+            "$ref": "#/definitions/IGeoPolyStyle"
           }
         },
         "required": ["lineStyle", "polyStyle"]
@@ -370,6 +410,76 @@
         "$ref": "#/definitions/IGeoImage"
       }]
     },
+    "IGeoMilModifer": {
+      "type": "object",
+      "description" : "Defines a specific modifier from MIL-STD-2525 based on an enumeration of options",
+      "properties": {
+        "milModifierName": {
+          "desciption": "Value of the MIL-STD-2525 modifier name from an enumeration of options",
+          "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "H1", "H2", "J", "K", "L", "M", "N", "P", "Q", "R", "R2", "S", "T", "T1", "V", "W", "W1", "X", "Y", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "CC", "CN", "SCC"]
+        },
+        "value": {
+          "description": "MIL-STD-2525 modifier values often allow for multiple types such as in one case a single integer which can also be repsresented as an array of integers.  In order to avoid exterme complication and consitional logic in a schema, the value can be represented as a JSON simple type.  The MIL-STD-2525 rendering solution can translate the JSON sting into the appropriate runtime data type",
+          "type": "string"
+        }
+      }
+    },
+    "IGeoACMModifer": {
+      "type": "object",
+      "properties": {
+        "acmModifierName": {
+          "enum": ["RADIUS", "INNER_RADIUS", "TURN", "MIN_ALT", "MAX_ALT", "LEFT_AZIMUTH", "RIGHT_AZIMUTH", "WIDTH", "LEFT_WIDTH", "RIGHT_WIDTH", "ALTITUDE_MODE"]
+        },
+        "value": {
+          "description": "",
+          "type": "string"
+        }
+      }
+    },
+    "IGeoMilSymbol": {
+      "allOf": [{
+        "$ref": "#/definitions/IGeoRenderable"
+      }, {
+        "properties": {
+          "symbolStadard": {
+            "description": "Version of the MIL-STD-2525 standard to use",
+            "enum": ["2525C", "2525B"],
+            "type": "string"
+          },
+          "symbolCode": {
+            "description": "Symbol code as defined by MIL-STD-2525",
+            "default": "2525C"
+          },
+          "modifiers": {
+            "type": "array",
+            "description" : "List of modifiers elements defining symbol per MIL-STD-2525",
+            "items": {
+              "$ref": "#/definitions/IGeoMilModfier"
+            }
+          }
+        },
+        "required": ["symbolCode", "modifiers"]
+      }]
+    },
+    "IGeoACM": {
+      "allOf": [{
+        "$ref": "#/definitions/IGeoSurface"
+      }, {
+        "properties": {
+          "acmType": {
+            "description": "Symbol code as defined by MIL-STD-2525",
+            "enum": ["ROUTE", "CYLINDER", "ORBIT", "POLYGON", "RADARC", "POLYARC", "TRACK", "CURTAIN"]
+          },
+          "acmAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/IGeoACMModfier"
+            }
+          }
+        },
+        "required": ["symbolCode", "modifiers"]
+      }]
+    },
     "IGeoDocument": {
       "description": "",
       "allOf": [{
@@ -377,7 +487,7 @@
       }, {
         "properties": {
           "documentURI": {
-            "description": "URL the document should be loaded from, or a dataURI encoding of the resource embedded ast the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)",
+            "description": "URL the document should be loaded from, or a dataURI encoding of the resource embedded as the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)",
             "type": "string"
           },
           "documentType": {
@@ -408,5 +518,9 @@
     "$ref": "#/definitions/IGeoImageOverlay"
   }, {
     "$ref": "#/definitions/IGeoDocument"
+  }, {
+    "$ref": "#/definitions/IGeoMilSymbol"
+  }, {
+    "$ref": "#/definitions/IGeoACM"
   }]
 }
