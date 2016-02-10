@@ -23,9 +23,9 @@ var schema = loadJSONfile(__dirname + '/../schema/geonotation.schema.json'),
   // Include the Java lang generator
   langJava = require("./langs/java.js"),
   // Include the c# lang generator
-  langCSharp = require("./langs/cs.js"),
+  //langCSharp = require("./langs/cs.js"),
   // Add the target langs that will be used by generator
-  langs = [langJava, langCSharp],
+  langs = [langJava],//, langCSharp],
   i,
   len,
   langDef,
