@@ -410,7 +410,7 @@
         "$ref": "#/definitions/IGeoImage"
       }]
     },
-    "IGeoMilModifer": {
+    "IGeoMilModifier": {
       "type": "object",
       "description" : "Defines a specific modifier from MIL-STD-2525 based on an enumeration of options",
       "properties": {
@@ -424,7 +424,7 @@
         }
       }
     },
-    "IGeoACMModifer": {
+    "IGeoACMModifier": {
       "type": "object",
       "properties": {
         "acmModifierName": {
@@ -443,18 +443,18 @@
         "properties": {
           "symbolStadard": {
             "description": "Version of the MIL-STD-2525 standard to use",
-            "enum": ["2525C", "2525B"],
+            "enum": ["MIL_STD_2525C", "MIL_STD_2525B"],
             "type": "string"
           },
           "symbolCode": {
             "description": "Symbol code as defined by MIL-STD-2525",
-            "default": "2525C"
+            "default": "MIL_STD_2525C"
           },
           "modifiers": {
             "type": "array",
             "description" : "List of modifiers elements defining symbol per MIL-STD-2525",
             "items": {
-              "$ref": "#/definitions/IGeoMilModfier"
+              "$ref": "#/definitions/IGeoMilModifier"
             }
           }
         },
@@ -473,7 +473,7 @@
           "acmAttributes": {
             "type": "array",
             "items": {
-              "$ref": "#/definitions/IGeoACMModfier"
+              "$ref": "#/definitions/IGeoACMModifier"
             }
           }
         },

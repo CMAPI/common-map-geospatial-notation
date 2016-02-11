@@ -18,9 +18,9 @@ module.exports = {
       properties.push('\n  /**');
       properties.push('  *' + propVal.description);
       properties.push('  */');
-      properties.push('  @JsonProperty("' + prop + '")');
+      properties.push('  //@org.codehaus.jackson.annotate.JsonProperty("' + prop + '")');
       properties.push("  public void set" + uProp + "(" + type + " value );\n");
-      properties.push('  @JsonProperty("' + prop + '")');
+      properties.push('  //@org.codehaus.jackson.annotate.JsonProperty("' + prop + '")');
       properties.push("  public " + type + " get" + uProp + "();\n");
 
     }
@@ -28,18 +28,18 @@ module.exports = {
   },
   getType: function(property, name, parentName) {
     // Default to string in case no type is avaiable
-    var type = "string";
+    var type = "String";
     if (property.hasOwnProperty("type")) {
       switch (property.type) {
         case "number":
           type = "float";
           break;
         case "string":
-          type = "string";
+          type = "String";
           break;
         case "array":
           // This references a different interface so we need to get that interfaces name
-          type = "List<" + property.items["$ref"].replace("#/definitions/", "") + ">";
+          type = "java.util.List<" + property.items["$ref"].replace("#/definitions/", "") + ">";
           break;
         case "object":
           type = name;
@@ -89,7 +89,7 @@ module.exports = {
         var type;
         if (item.hasOwnProperty("$ref")) {
           if (refs.length === 0) {
-            refs = " implements ";
+            refs = " extends ";
           } else {
             refs += ", ";
           }
@@ -141,7 +141,7 @@ module.exports = {
     if (!this.fs.existsSync(dir)) {
       this.fs.mkdirSync(dir);
     }
-    this.fs.writeFile(dir + ".java", content, function(err) {
+    this.fs.writeFile(dir + "/" + name + ".java", content, function(err) {
       if (err) {
         console.log(err);
       } else {
