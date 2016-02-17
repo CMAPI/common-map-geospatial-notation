@@ -12,6 +12,17 @@
         "required": ["altitudeMode"]
       }
     },
+    "IGeoPathMode": {
+      "type": "object",
+      "description": "Defines how a path will be calculated between each vertice",
+      "properties": {
+        "description": "Enumeration of path modes",
+        "pathMode": {
+          "enum": ["RHUMB", "GREAT_CIRCLE", "LINEAR"]
+        },
+        "required": ["pathMode"]
+      }
+    },
     "IGeoTimeStamp": {
       "type": "object",
       "description": "Defines a point in time that something occured, was created, or was last updated.",
@@ -392,6 +403,9 @@
         "properties": {
           "strokeStyle": {
             "$ref": "#/definitions/IGeoStrokeStyle"
+          },
+          "pathMode": {
+            "$ref": "#/definitions/IGeoPathMode"
           }
         },
         "required": ["strokeStyle"]
