@@ -3,11 +3,11 @@
   "definitions": {
     "IGeoAltitudeMode": {
       "type": "object",
-      "description": "Define how the alititude value in an IGeoLocation alt (altitude) property will be interpreted",
+      "description": "Define how the alititude value in an IGeoPosition alt (altitude) property will be interpreted",
       "properties": {
-        "description": "Enumeration of altitutde modes",
+        "description": "Enumeration of altitude modes",
         "altitudeMode": {
-          "enum": ["clampToGround", "relativeToGround", "absolute"]
+          "enum": ["CLAMP_TO_GROUND", "REALTIVE_TO_GROUND", "ABSOLUTE", "HEIGHT_ABOVE_ELLIPSOID"]
         },
         "required": ["altitudeMode"]
       }
@@ -17,7 +17,7 @@
       "description": "Defines a point in time that something occured, was created, or was last updated.",
       "properties": {
         "when": {
-          "description": "value in epoc milliseconds in UTC with a 0 offset - ZULU Time",
+          "description": "Value in epoc milliseconds with a GMT 0 offset - ZULU Time",
           "type": "number"
         }
       },
@@ -28,72 +28,76 @@
       "description": "Defines a range in time that represents a beginning and end.",
       "properties": {
         "begin": {
-          "description": "staring date time value in epoc milliseconds in UTC with a 0 offset - ZULU Time",
+          "description": "Starting date time value in epoc milliseconds in UTC with a 0 offset - ZULU Time",
           "type": "number"
         },
         "end": {
-          "description": "ending date time value in epoc milliseconds in UTC with a 0 offset - ZULU Time",
+          "description": "Ending date time value in epoc milliseconds in UTC with a 0 offset - ZULU Time",
           "type": "number"
         }
       },
       "required": ["begin", "end"]
     },
-    "IGeoLocation": {
+    "IGeoPosition": {
       "type": "object",
-      "description": "Defines a specific geospatial location derived using WGS-84 latitude Longitude",
+      "description": "Defines a specific geospatial position derived using WGS-84 latitude longitude",
       "properties": {
-        "lat": {
-          "description": "Latitude value in degrees decimal (i.e. 23.4567) derived from a WGS-84 datum",
+        "latitude": {
+          "description": "Latitude value in degrees decimal (i.e. 23.4567) derived from WGS-84",
           "type": "number",
           "minimum": -90,
-          "maximum": 90
+          "maximum": 90,
+          "default": 0
         },
-        "lon": {
+        "longitude": {
           "type": "number",
+          "description": "Longitude value in degrees decimal (i.e. 23.4567) derived from WGS-84",
           "minimum": -180,
-          "maximum": 180
+          "maximum": 180,
+          "default": 0
         },
-        "alt": {
+        "altitude": {
           "type": "number",
-          "description": "A value in meters representing the altitude of the associated location.  This will be interpreted base on the altitudeMode provided in the IGeoAltitudeMode enumeration"
+          "description": "A value in meters representing the altitude of the associated position.  This will be interpreted base on the altitudeMode provided in the IGeoAltitudeMode enumeration",
+          "default": 0
         }
       },
-      "required": ["lat", "lon", "alt"]
+      "required": ["latitude", "longitude", "altitude"]
     },
-    "IGeoLocationList": {
+    "IGeoPositionList": {
       "type": "object",
-      "description": "An ordered list of Locations representing a 1 or more Locations with an associated IGeoAltitudeMode to interpret the altitude values.  In the case of a point, a inslge Location will create a single icon, wheras mulitple locations will create the same icon at multiple locations to be interpreted as a composite feature. For consistency, and IGeoRenderables use an IGeoLocationList even when only containing a single location",
+      "description": "An ordered list of positions representing a 1 or more positions with an associated IGeoAltitudeMode to interpret the altitude values.  In the case of a point, a single position will create a single icon, wheras mulitple positions will create the same icon at multiple positions to be interpreted as a composite feature. For consistency, and IGeoRenderables use an IGeoPositionList even when only containing a single position",
       "allOf": [{
         "$ref": "#/definitions/IGeoAltitudeMode"
       }, {
         "properties": {
-          "locations": {
+          "positions": {
             "type": "array",
             "items": {
-              "$ref": "#/definitions/IGeoLocation"
+              "$ref": "#/definitions/IGeoPosition"
             }
           },
-          "required": ["locations"]
+          "required": ["positions"]
         }
       }]
     },
-    "IGeoLocationListTime": {
+    "IGeoPositionListTime": {
       "type": "object",
-      "description": "An location with a timestamp associated to it",
+      "description": "A position with a timestamp associated to it",
       "allOf": [{
-        "$ref": "#/definitions/IGeoLocationList"
+        "$ref": "#/definitions/IGeoPositionList"
       }, {
         "$ref": "#/definitions/IGeoTimeStamp"
       }]
     },
-    "IGeoLocationHistory": {
+    "IGeoPositionHistory": {
       "type": "object",
-      "description": "An ordered collection of IGeoLocationListTime obejcts.  These are the same as IGeoLocationList with the addition of a required timestamp field 'when' indicating the date and time the locations were recorded",
+      "description": "An ordered collection of IGeoPositionListTime obejcts.  These are the same as IGeoPositionList with the addition of a required timestamp field 'when' indicating the date and time the positions were recorded",
       "properties": {
-        "locations": {
+        "positions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/IGeoLocationListTime"
+            "$ref": "#/definitions/IGeoPositionListTime"
           }
         }
       }
@@ -104,7 +108,7 @@
       "allOf": [{
         "$ref": "#/definitions/IGeoAltitudeMode"
       }, {
-        "$ref": "#/definitions/IGeoLocation"
+        "$ref": "#/definitions/IGeoPosition"
       }, {
         "properties": {
           "tilt": {
@@ -131,15 +135,15 @@
           }
         }
       }],
-      "required": ["lat", "lon", "alt", "heading"]
+      "required": ["tilt", "roll", "range", "heading"]
     },
     "IGeoLookAt": {
       "type": "object",
-      "description": "The LookAt element positions the 'camera' in relation to the IGeoLocation that is being viewed",
+      "description": "The LookAt element positions the 'camera' in relation to the IGeoPosition that is being viewed",
       "allOf": [{
         "$ref": "#/definitions/IGeoAltitudeMode"
       }, {
-        "$ref": "#/definitions/IGeoLocation"
+        "$ref": "#/definitions/IGeoPosition"
       }, {
         "properties": {
           "tilt": {
@@ -156,39 +160,65 @@
           },
           "range": {
             "type": "number",
-            "description": "Distance in meters from the point specified by IGeoLocation to the LookAt position"
+            "description": "Distance in meters from the point specified by IGeoPosition to the LookAt position"
           }
         }
       }],
-      "required": ["lat", "lon", "alt", "heading"]
+      "required": ["tilt", "heading", "range"]
     },
     "IGeoBounds": {
       "type": "object",
       "properties": {
-        "left": {
+        "minLongitude": {
           "type": "number",
           "minimum": -180,
           "maximum": 180
         },
-        "right": {
+        "maxLongitude": {
           "type": "number",
           "minimum": -180,
           "maximum": 180
         },
-        "top": {
+        "maxLatitude": {
           "type": "number",
           "minimum": -90,
           "maximum": 90
         },
-        "bottom": {
+        "minLatitude": {
           "type": "number",
           "minimum": -90,
           "maximum": 90
         }
       },
-      "required": ["left", "right", "top", "bottom"]
+      "required": ["minLongitude", "maxLongitude", "maxLatitude", "minLatitude"]
     },
-    "IGeoLineStyle": {
+    "IGeoColor": {
+      "type": "object",
+      "properties": {
+        "red": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "green": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "blue": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "alpha": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["red", "green", "blue", "alpha"]
+    },
+    "IGeoStrokeStyle": {
       "type": "object",
       "properties": {
         "LineColor": {
@@ -200,7 +230,7 @@
       },
       "required": ["lineColor", "linePattern"]
     },
-    "IGeoPolyStyle": {
+    "IGeoFillStyle": {
       "type": "object",
       "properties": {
         "fillColor": {
@@ -216,7 +246,7 @@
       "type": "object",
       "properties": {
         "size": {
-          "description": "Pixel size in pixels.  If the icon is not square, the size will represent the larger value of the rectangle",
+          "description": "Size in pixels.  If the icon is not square, the size will represent the larger value of the rectangle",
           "type": "number",
           "minimum": 1
         },
@@ -233,9 +263,23 @@
       },
       "required": ["size", "offSetX", "offSetY"]
     },
+    "IGeoLabelStyle": {
+      "type": "object",
+      "properties": {
+        "scale": {
+          "description": "Multiplier for the size of text displayed as the label",
+          "type": "number",
+          "default": 1
+        },
+        "color": {
+          "$ref": "#/definitions/IGeoColor"
+        }
+      },
+      "required": ["scale"]
+    },
     "IGeoBufferable": {
       "type": "object",
-      "description": "Indicates if a buffer object in meters can be applied to a single, or list of locations as an extension outwards from the original location(s)",
+      "description": "Indicates if a buffer object in meters can be applied to a single, or list of positions as an extension outwards from the original position(s)",
       "properties": {
         "buffer": {
           "type": "number"
@@ -247,13 +291,13 @@
       "type": "object",
       "description": "Indicates an angle in degress to rotate the item",
       "properties": {
-        "rotation": {
+        "heading": {
           "type": "number",
           "minimum": 0,
           "maximum": 359
         }
       },
-      "required": ["rotation"]
+      "required": ["heading"]
     },
     "IGeoImage": {
       "type": "object",
@@ -273,19 +317,19 @@
     "IGeoBase": {
       "type": "object",
       "properties": {
-        "name": {
+        "fpLabel": {
           "type": "string"
         },
-        "id": {
+        "fpID": {
           "description": "The id value shuld be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element",
           "type": "string"
         },
-        "description": {
+        "fpDescription": {
           "type": "string",
           "default": ""
         }
       },
-      "required": ["name", "id", "description"]
+      "required": ["fpLabel", "fpID", "fpDescription"]
     },
     "IGeoContainer": {
       "type": "object",
@@ -296,7 +340,7 @@
           "children": {
             "type": "array",
             "items": {
-              "$ref": "#/definitions/IGeoContainer"
+              "$ref": "#/definitions/IGeoBase"
             }
           }
         },
@@ -306,9 +350,16 @@
     "IGeoRenderable": {
       "type": "object",
       "allOf": [{
-        "$ref": "#/definitions/IGeoLocationList"
+        "$ref": "#/definitions/IGeoPositionList"
       }, {
-        "$ref": "#/definitions/IGeoContainer"
+        "$ref": "#/definitions/IGeoBase"
+      }, {
+        "properties": {
+          "labelStyle": {
+            "$ref": "#/definitions/IGeoLabelStyle"
+          }
+        },
+        "required": ["labelStyle"]
       }]
     },
     "IGeoPoint": {
@@ -327,18 +378,23 @@
         "required": ["iconStyle"]
       }]
     },
-    "IGeoLine": {
+    "IGeoText": {
+      "allOf": [{
+        "$ref": "#/definitions/IGeoRenderable"
+      }]
+    },
+    "IGeoPath": {
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
         "$ref": "#/definitions/IGeoBufferable"
       }, {
         "properties": {
-          "lineStyle": {
-            "$ref": "#/definitions/IGeoLineStyle"
+          "strokeStyle": {
+            "$ref": "#/definitions/IGeoStrokeStyle"
           }
         },
-        "required": ["lineStyle"]
+        "required": ["strokeStyle"]
       }]
     },
     "IGeoSurface": {
@@ -348,14 +404,14 @@
         "$ref": "#/definitions/IGeoBufferable"
       }, {
         "properties": {
-          "lineStyle": {
-            "$ref": "#/definitions/IGeoLineStyle"
+          "strokeStyle": {
+            "$ref": "#/definitions/IGeoStrokeStyle"
           },
-          "polyStyle": {
-            "$ref": "#/definitions/IGeoPolyStyle"
+          "fillStyle": {
+            "$ref": "#/definitions/IGeoFillStyle"
           }
         },
-        "required": ["lineStyle", "polyStyle"]
+        "required": ["strokeStyle", "fillStyle"]
       }]
     },
     "IGeoPolygon": {
@@ -363,6 +419,19 @@
         "$ref": "#/definitions/IGeoSurface"
       }, {
         "$ref": "#/definitions/IGeoBufferable"
+      }]
+    },
+    "IGeoCircle": {
+      "allOf": [{
+        "$ref": "#/definitions/IGeoSurface"
+      }, {
+        "properties": {
+          "radius": {
+            "description": "Radius of the circle in meters",
+            "type": "number"
+          }
+        },
+        "required": ["radius"]
       }]
     },
     "IGeoEllipse": {
@@ -373,11 +442,11 @@
       }, {
         "properties": {
           "majorRadius": {
-            "description": "Radius of the ellipse in meters on the x axis (width).  For a square make the major and minor radius the same value",
+            "description": "Radius of the ellipse in meters on the x axis (width)",
             "type": "number"
           },
           "minorRadius": {
-            "description": "Radius of the ellipse in meters on the y axis (height).  For a square make the major and minor the same value",
+            "description": "Radius of the ellipse in meters on the y axis (height)",
             "type": "number"
           }
         },
@@ -391,16 +460,31 @@
         "$ref": "#/definitions/IGeoRotatable"
       }, {
         "properties": {
-          "majorRadius": {
-            "description": "Radius of the rectangle in meters on the x axis (width).  For a circle make the major and minor radius the same value",
+          "width": {
+            "description": "Width of the rectangle in meters on the x axis",
             "type": "number"
           },
-          "minorRadius": {
-            "description": "Radius of the rectangle in meters on the y axis (height).  For a circle make the major and minor the same value",
+          "height": {
+            "description": "Height of the rectangle in meters on the y axis",
             "type": "number"
           }
         },
         "required": ["majorRadius", "minorRadius"]
+      }]
+    },
+    "IGeoSquare": {
+      "allOf": [{
+        "$ref": "#/definitions/IGeoSurface"
+      }, {
+        "$ref": "#/definitions/IGeoRotatable"
+      }, {
+        "properties": {
+          "width": {
+            "description": "Width of the square in meters on the x axis ",
+            "type": "number"
+          }
+        },
+        "required": ["radius"]
       }]
     },
     "IGeoImageOverlay": {
@@ -412,7 +496,7 @@
     },
     "IGeoMilModifier": {
       "type": "object",
-      "description" : "Defines a specific modifier from MIL-STD-2525 based on an enumeration of options",
+      "description": "Defines a specific modifier from MIL-STD-2525 based on an enumeration of options",
       "properties": {
         "milModifierName": {
           "desciption": "Value of the MIL-STD-2525 modifier name from an enumeration of options",
@@ -424,11 +508,11 @@
         }
       }
     },
-    "IGeoACMModifier": {
+    "IGeoAirControlMeasureModifier": {
       "type": "object",
       "properties": {
         "acmModifierName": {
-          "enum": ["RADIUS", "INNER_RADIUS", "TURN", "MIN_ALT", "MAX_ALT", "LEFT_AZIMUTH", "RIGHT_AZIMUTH", "WIDTH", "LEFT_WIDTH", "RIGHT_WIDTH", "ALTITUDE_MODE"]
+          "enum": ["RADIUS", "INNER_RADIUS", "TURN", "MIN_ALT", "MAX_ALT", "LEFT_AZIMUTH", "RIGHT_AZIMUTH", "WIDTH", "LEFT_WIDTH", "RIGHT_WIDTH"]
         },
         "value": {
           "description": "",
@@ -441,27 +525,27 @@
         "$ref": "#/definitions/IGeoRenderable"
       }, {
         "properties": {
-          "symbolStadard": {
+          "symbolStandard": {
             "description": "Version of the MIL-STD-2525 standard to use",
             "enum": ["MIL_STD_2525C", "MIL_STD_2525B"],
             "type": "string"
           },
           "symbolCode": {
             "description": "Symbol code as defined by MIL-STD-2525",
-            "default": "MIL_STD_2525C"
+            "type": "string"
           },
           "modifiers": {
             "type": "array",
-            "description" : "List of modifiers elements defining symbol per MIL-STD-2525",
+            "description": "List of modifiers elements defining symbol per MIL-STD-2525",
             "items": {
               "$ref": "#/definitions/IGeoMilModifier"
             }
           }
         },
-        "required": ["symbolCode", "modifiers"]
+        "required": ["symbolStandard", "symbolCode", "modifiers"]
       }]
     },
-    "IGeoACM": {
+    "AirControlMeasure": {
       "allOf": [{
         "$ref": "#/definitions/IGeoSurface"
       }, {
@@ -473,11 +557,11 @@
           "acmAttributes": {
             "type": "array",
             "items": {
-              "$ref": "#/definitions/IGeoACMModifier"
+              "$ref": "#/definitions/IGeoAirControlMeasureModifier"
             }
           }
         },
-        "required": ["symbolCode", "modifiers"]
+        "required": ["acmType", "acmAttributes"]
       }]
     },
     "IGeoDocument": {
@@ -507,12 +591,16 @@
   }, {
     "$ref": "#/definitions/IGeoPoint"
   }, {
-    "$ref": "#/definitions/IGeoLine"
+    "$ref": "#/definitions/IGeoPath"
   }, {
     "$ref": "#/definitions/IGeoPolygon"
   }, {
     "$ref": "#/definitions/IGeoRectangle"
   }, {
+    "$ref": "#/definitions/IGeoSquare"
+  },{
+    "$ref": "#/definitions/IGeoCircle"
+  },{
     "$ref": "#/definitions/IGeoEllipse"
   }, {
     "$ref": "#/definitions/IGeoImageOverlay"
@@ -521,6 +609,6 @@
   }, {
     "$ref": "#/definitions/IGeoMilSymbol"
   }, {
-    "$ref": "#/definitions/IGeoACM"
+    "$ref": "#/definitions/IGeoAirControlMeasure"
   }]
 }
