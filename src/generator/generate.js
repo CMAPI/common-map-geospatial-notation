@@ -1,4 +1,14 @@
 var fs = require('fs');
+var debug = false;
+var filePath = "/../schema/cmapi2.schema.json";
+
+if (process.argv[2] === "-debug") {
+  debug = true;
+}
+
+if (process.argv[3] !== undefined && process.argv[3] !== null) {
+  filePath = process.argv[3];
+}
 // Load the schema JSON file
 function loadJSONfile(filename, encoding) {
   try {
@@ -12,28 +22,31 @@ function loadJSONfile(filename, encoding) {
 
   } catch (err) {
     // an error occurred
-    console.log("An error occured while attempting to load the schema JSON file")
-    console.log(err);
+    if (debug) {
+      console.log("An error occured while attempting to load the schema JSON file")
+      console.log(err);
+    }
   }
 } // loadJSONfile
 
 
 // set the content of the loaded schmea into the myData object
-var schema = loadJSONfile(__dirname + '/../schema/geonotation.schema.json'),
+var schema = loadJSONfile(__dirname + filePath),
   // Include the Java lang generator
-  langJava = require("./langs/java.js"),
+  langJava = require("./langs/java2.js"),
+  langD3 = require("./langs/d3.js"),
+  namspace = "org.cmapi.primitives",
   // Include the c# lang generator
   //langCSharp = require("./langs/cs.js"),
   // Add the target langs that will be used by generator
-  langs = [langJava],//, langCSharp],
+  langs = [langJava], //, langCSharp],
   i,
   len,
-  langDef,
-  definitions = schema.definitions;
+  langDef;
 
 for (i = 0; i < langs.length; i++) {
   langDef = langs[i];
-  for (var key in definitions) {
-    langDef.createInterface(definitions, key, definitions[key]);
-  }
+
+  langDef.generate(schema, namspace, debug);
+
 };

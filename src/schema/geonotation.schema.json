@@ -2,49 +2,26 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "definitions": {
     "IGeoAltitudeMode": {
-      "type": "object",
-      "description": "Define how the alititude value in an IGeoPosition alt (altitude) property will be interpreted",
       "properties": {
-        "description": "Enumeration of altitude modes",
         "altitudeMode": {
-          "enum": ["CLAMP_TO_GROUND", "REALTIVE_TO_GROUND", "ABSOLUTE", "HEIGHT_ABOVE_ELLIPSOID"]
-        },
-        "required": ["altitudeMode"]
-      }
-    },
-    "IGeoPathMode": {
-      "type": "object",
-      "description": "Defines how a path will be calculated between each vertice",
-      "properties": {
-        "description": "Enumeration of path modes",
-        "pathMode": {
-          "enum": ["RHUMB", "GREAT_CIRCLE", "LINEAR"]
-        },
-        "required": ["pathMode"]
-      }
-    },
-    "IGeoTimeStamp": {
-      "type": "object",
-      "description": "Defines a point in time that something occured, was created, or was last updated.",
-      "properties": {
-        "when": {
-          "description": "Value in epoc milliseconds with a GMT 0 offset - ZULU Time",
-          "type": "number"
+          "description": "Enumeration of altitude modes to define how the alititude value in an IGeoPosition alt (altitude) property will be interpreted",
+          "enum": ["CLAMP_TO_GROUND", "REALTIVE_TO_GROUND", "ABSOLUTE"]
         }
-      },
-      "required": ["when"]
+      }
     },
     "IGeoTimeSpan": {
       "type": "object",
       "description": "Defines a range in time that represents a beginning and end.",
       "properties": {
         "begin": {
-          "description": "Starting date time value in epoc milliseconds in UTC with a 0 offset - ZULU Time",
-          "type": "number"
+          "description": "Starting date time value as defined by http://tools.ietf.org/html/rfc3339",
+          "type": "string",
+          "format": "date-time"
         },
         "end": {
-          "description": "Ending date time value in epoc milliseconds in UTC with a 0 offset - ZULU Time",
-          "type": "number"
+          "description": "Ending date time value as defined by http://tools.ietf.org/html/rfc3339",
+          "type": "string",
+          "format": "date-time"
         }
       },
       "required": ["begin", "end"]
@@ -75,47 +52,50 @@
       },
       "required": ["latitude", "longitude", "altitude"]
     },
-    "IGeoPositionList": {
+    "IGeoPositionGroup": {
       "type": "object",
-      "description": "An ordered list of positions representing a 1 or more positions with an associated IGeoAltitudeMode to interpret the altitude values.  In the case of a point, a single position will create a single icon, wheras mulitple positions will create the same icon at multiple positions to be interpreted as a composite feature. For consistency, and IGeoRenderables use an IGeoPositionList even when only containing a single position",
+      "description": "An ordered list of positions representing a 1 or more positions with an associated IGeoAltitudeMode to interpret the altitude values.  In the case of a point, a single position will create a single icon, wheras mulitple positions will create the same icon at multiple positions to be interpreted as a composite feature. For consistency, and IGeoRenderables use an IGeoPositionGroup even when only containing a single position",
       "allOf": [{
         "$ref": "#/definitions/IGeoAltitudeMode"
       }, {
         "properties": {
           "positions": {
+            "description": "An ordered list of IGeoPosition objects representing a 1 or more positions with an associated IGeoAltitudeMode to interpret the altitude values.  In the case of a point, a single position will create a single icon, wheras mulitple positions will create the same icon at multiple positions to be interpreted as a composite feature. For consistency, and IGeoRenderables use an IGeoPositionGroup even when only containing a single positions",
             "type": "array",
             "items": {
               "$ref": "#/definitions/IGeoPosition"
+            }
+          },
+          "timeStamp": {
+            "description": "Defines a point in time that something occured, was created, or was last updated time value as defined by http://tools.ietf.org/html/rfc3339",
+            "type": "string",
+            "format": "date-time"
+          },
+          "timeSpans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/IGeoTimeSpan"
             }
           },
           "required": ["positions"]
         }
       }]
     },
-    "IGeoPositionListTime": {
-      "type": "object",
-      "description": "A position with a timestamp associated to it",
-      "allOf": [{
-        "$ref": "#/definitions/IGeoPositionList"
-      }, {
-        "$ref": "#/definitions/IGeoTimeStamp"
-      }]
-    },
     "IGeoPositionHistory": {
       "type": "object",
-      "description": "An ordered collection of IGeoPositionListTime obejcts.  These are the same as IGeoPositionList with the addition of a required timestamp field 'when' indicating the date and time the positions were recorded",
+      "description": "An ordered collection of IGeoPositionGroup objects",
       "properties": {
-        "positions": {
+        "positionHistory": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/IGeoPositionListTime"
+            "$ref": "#/definitions/IGeoPositionGroup"
           }
         }
       }
     },
     "IGeoCamera": {
       "type": "object",
-      "description": "Defines the virtual camera that views the scene. This element defines the position of the camera relative to the Earth's surface as well as the viewing direction of the camera. The camera position is defined by <longitude>, <latitude>, <altitude>, and either <altitudeMode>. The viewing direction of the camera is defined by <heading>, <tilt>, and <roll>. An IGeoCamera provides full six-degrees-of-freedom control over the view, so you can position the Camera in space and then rotate it around the X, Y, and Z axes. Most importantly, you can tilt the camera view so that you're looking above the horizon into the sky. The order of rotation is important. By default, the camera is looking straight down the −Z axis toward the Earth. Before rotations are performed, the camera is translated along the Z axis to <altitude>. The order of transformations is as follows: <altitude> - translate along the Z axis to <altitude><heading> - rotate around the Z axis.<tilt> - rotate around the X axis.<roll> - rotate around the Z axis (again). Note that each time a rotation is applied, two of the camera axes change their orientation.",
+      "description": "Defines the virtual camera that views the scene. This element defines the position of the camera relative to the Earth's surface as well as the viewing direction of the camera. The camera position is defined by <longitude>, <latitude>, <altitude>, and either <altitudeMode>. The viewing direction of the camera is defined by <azimuth>, <tilt>, and <roll>. An IGeoCamera provides full six-degrees-of-freedom control over the view, so you can position the Camera in space and then rotate it around the X, Y, and Z axes. Most importantly, you can tilt the camera view so that you're looking above the horizon into the sky. The order of rotation is important. By default, the camera is looking straight down the −Z axis toward the Earth. Before rotations are performed, the camera is translated along the Z axis to <altitude>. The order of transformations is as follows: <altitude> - translate along the Z axis to <altitude><azimuth> - rotate around the Z axis.<tilt> - rotate around the X axis.<roll> - rotate around the Z axis (again). Note that each time a rotation is applied, two of the camera axes change their orientation.",
       "allOf": [{
         "$ref": "#/definitions/IGeoAltitudeMode"
       }, {
@@ -134,7 +114,7 @@
             "maximum": 179,
             "description": "Rotation, in degrees, of the camera around the Z axis. Values range from −180 to +180 degrees"
           },
-          "heading": {
+          "azimuth": {
             "type": "number",
             "minimum": 0,
             "maximum": 359,
@@ -146,7 +126,7 @@
           }
         }
       }],
-      "required": ["tilt", "roll", "range", "heading"]
+      "required": ["tilt", "roll", "range", "azimuth"]
     },
     "IGeoLookAt": {
       "type": "object",
@@ -163,7 +143,7 @@
             "minimum": 0,
             "maximum": 179
           },
-          "heading": {
+          "azimuth": {
             "type": "number",
             "minimum": 0,
             "maximum": 359,
@@ -175,7 +155,7 @@
           }
         }
       }],
-      "required": ["tilt", "heading", "range"]
+      "required": ["tilt", "azimuth", "range"]
     },
     "IGeoBounds": {
       "type": "object",
@@ -203,28 +183,50 @@
       },
       "required": ["minLongitude", "maxLongitude", "maxLatitude", "minLatitude"]
     },
+    "IGeoView": {
+      "type": "object",
+      "properties": {
+        "camera": {
+          "$ref": "#/definitions/IGeoCamera"
+        },
+        "lookAt": {
+          "$ref": "#/definitions/IGeoLookAt"
+        },
+        "bounds": {
+          "$ref": "#/definitions/IGeoBounds"
+        },
+        "scale": {
+          "type": "number",
+          "description": "Approximate map scale of current view"
+        }
+      }
+    },
     "IGeoColor": {
       "type": "object",
       "properties": {
         "red": {
           "type": "number",
           "minimum": 0,
-          "maximum": 255
+          "maximum": 255,
+          "default": 0
         },
         "green": {
           "type": "number",
           "minimum": 0,
-          "maximum": 255
+          "maximum": 255,
+          "default": 0
         },
         "blue": {
           "type": "number",
           "minimum": 0,
-          "maximum": 255
+          "maximum": 255,
+          "default": 0
         },
         "alpha": {
           "type": "number",
           "minimum": 0,
-          "maximum": 1
+          "maximum": 1,
+          "default": 0.8
         }
       },
       "required": ["red", "green", "blue", "alpha"]
@@ -232,14 +234,20 @@
     "IGeoStrokeStyle": {
       "type": "object",
       "properties": {
-        "LineColor": {
+        "strokeColor": {
           "$ref": "#/definitions/IGeoColor"
         },
-        "linePattern": {
+        "strokePattern": {
           "enum": ["solid", "dashed", "dotted"]
+        },
+        "strokeWidth": {
+          "type": "number",
+          "description": "Width of the stroke on the screen in pixels",
+          "default": 3
         }
+
       },
-      "required": ["lineColor", "linePattern"]
+      "required": ["strokeColor", "strokePattern", "strokeWidth"]
     },
     "IGeoFillStyle": {
       "type": "object",
@@ -248,10 +256,11 @@
           "$ref": "#/definitions/IGeoColor"
         },
         "fillPattern": {
-          "enum": ["solid", "dashed", "dotted"]
+          "enum": ["solid", "hatched", "crossHatched"],
+          "default": "solid"
         }
       },
-      "required": ["fillColor"]
+      "required": ["fillColor", "fillPatern"]
     },
     "IGeoIconStyle": {
       "type": "object",
@@ -288,59 +297,29 @@
       },
       "required": ["scale"]
     },
-    "IGeoBufferable": {
-      "type": "object",
-      "description": "Indicates if a buffer object in meters can be applied to a single, or list of positions as an extension outwards from the original position(s)",
-      "properties": {
-        "buffer": {
-          "type": "number"
-        }
-      },
-      "required": ["buffer"]
-    },
-    "IGeoRotatable": {
-      "type": "object",
-      "description": "Indicates an angle in degress to rotate the item",
-      "properties": {
-        "heading": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 359
-        }
-      },
-      "required": ["heading"]
-    },
-    "IGeoImage": {
-      "type": "object",
-      "properties": {
-        "description": "Indicates the URL to request the icon image image or dataURI encoding of the icon image embedded as the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)",
-        "imageURI": {
-          "type": "string"
-        },
-        "alpha": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        }
-      },
-      "required": ["imageURI", "alpha"]
-    },
+
     "IGeoBase": {
       "type": "object",
       "properties": {
-        "fpLabel": {
+        "name": {
+          "type": "string",
+          "description": "Name is used to display text labels alonside to a feature and can be used in user interfaces that manage the data on the map",
+          "default": ""
+        },
+        "id": {
+          "description": "The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element",
           "type": "string"
         },
-        "fpID": {
-          "description": "The id value shuld be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element",
-          "type": "string"
-        },
-        "fpDescription": {
+        "description": {
           "type": "string",
           "default": ""
+        },
+        "readOnly": {
+          "type": "boolean",
+          "deafult": "false"
         }
       },
-      "required": ["fpLabel", "fpID", "fpDescription"]
+      "required": ["name", "id", "description", "readOnly"]
     },
     "IGeoContainer": {
       "type": "object",
@@ -361,13 +340,34 @@
     "IGeoRenderable": {
       "type": "object",
       "allOf": [{
-        "$ref": "#/definitions/IGeoPositionList"
+        "$ref": "#/definitions/IGeoContainer"
       }, {
-        "$ref": "#/definitions/IGeoBase"
+        "$ref": "#/definitions/IGeoPositionGroup"
       }, {
         "properties": {
           "labelStyle": {
             "$ref": "#/definitions/IGeoLabelStyle"
+          },
+          "extrude": {
+            "type": "boolean",
+            "default": false,
+            "description": "A curtain is formed below each point or line segemnt and extends to the ground"
+          },
+          "tessalate": {
+            "type": "boolean",
+            "default": true,
+            "description": "Value determines if the item will follow the terrain and drape, or follow a straight plane cutting through terrain above the altitude of the line segment.  This property is ignored for single position items."
+          },
+          "buffer": {
+            "type": "number",
+            "description": "Indicates if a buffer object in meters can be applied to a single, or list of positions as an extension outwards from the original position(s)",
+            "default" : 0
+          },
+          "azimuth": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 359,
+            "default": 0
           }
         },
         "required": ["labelStyle"]
@@ -377,13 +377,13 @@
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
-        "$ref": "#/definitions/IGeoImage"
-      }, {
-        "$ref": "#/definitions/IGeoBufferable"
-      }, {
         "properties": {
           "iconStyle": {
             "$ref": "#/definitions/IGeoIconStyle"
+          },
+          "iconURI": {
+            "type": "string",
+            "description": "Indicates the URL to request the icon image image or dataURI encoding of the icon image embedded as the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)"
           }
         },
         "required": ["iconStyle"]
@@ -398,14 +398,9 @@
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
-        "$ref": "#/definitions/IGeoBufferable"
-      }, {
         "properties": {
           "strokeStyle": {
             "$ref": "#/definitions/IGeoStrokeStyle"
-          },
-          "pathMode": {
-            "$ref": "#/definitions/IGeoPathMode"
           }
         },
         "required": ["strokeStyle"]
@@ -414,8 +409,6 @@
     "IGeoSurface": {
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
-      }, {
-        "$ref": "#/definitions/IGeoBufferable"
       }, {
         "properties": {
           "strokeStyle": {
@@ -431,8 +424,6 @@
     "IGeoPolygon": {
       "allOf": [{
         "$ref": "#/definitions/IGeoSurface"
-      }, {
-        "$ref": "#/definitions/IGeoBufferable"
       }]
     },
     "IGeoCircle": {
@@ -442,7 +433,8 @@
         "properties": {
           "radius": {
             "description": "Radius of the circle in meters",
-            "type": "number"
+            "type": "number",
+            "default": 100
           }
         },
         "required": ["radius"]
@@ -452,26 +444,24 @@
       "allOf": [{
         "$ref": "#/definitions/IGeoSurface"
       }, {
-        "$ref": "#/definitions/IGeoRotatable"
-      }, {
         "properties": {
-          "majorRadius": {
-            "description": "Radius of the ellipse in meters on the x axis (width)",
-            "type": "number"
+          "semiMajor": {
+            "description": "The magnitude of the semi-major axis - Radius of the ellipse in meters on the x axis (width)",
+            "type": "number",
+            "default": 100
           },
-          "minorRadius": {
-            "description": "Radius of the ellipse in meters on the y axis (height)",
-            "type": "number"
+          "semiMinor": {
+            "description": "The magnitude of the semi-minor axis - Radius of the ellipse in meters on the y axis (height)",
+            "type": "number",
+            "default": 50
           }
         },
-        "required": ["majorRadius", "minorRadius"]
+        "required": ["semiMajor", "semiMinor"]
       }]
     },
     "IGeoRectangle": {
       "allOf": [{
         "$ref": "#/definitions/IGeoSurface"
-      }, {
-        "$ref": "#/definitions/IGeoRotatable"
       }, {
         "properties": {
           "width": {
@@ -483,14 +473,12 @@
             "type": "number"
           }
         },
-        "required": ["majorRadius", "minorRadius"]
+        "required": ["width", "height"]
       }]
     },
     "IGeoSquare": {
       "allOf": [{
         "$ref": "#/definitions/IGeoSurface"
-      }, {
-        "$ref": "#/definitions/IGeoRotatable"
       }, {
         "properties": {
           "width": {
@@ -498,14 +486,19 @@
             "type": "number"
           }
         },
-        "required": ["radius"]
+        "required": ["width"]
       }]
     },
     "IGeoImageOverlay": {
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
-        "$ref": "#/definitions/IGeoImage"
+        "properties": {
+          "imageURI": {
+            "type": "string",
+            "description": "Indicates the URL to request the image or dataURI encoding of the icon image embedded as the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)"
+          }
+        }
       }]
     },
     "IGeoMilModifier": {
@@ -559,7 +552,7 @@
         "required": ["symbolStandard", "symbolCode", "modifiers"]
       }]
     },
-    "AirControlMeasure": {
+    "IGeoAirControlMeasure": {
       "allOf": [{
         "$ref": "#/definitions/IGeoSurface"
       }, {
@@ -588,9 +581,9 @@
             "description": "URL the document should be loaded from, or a dataURI encoding of the resource embedded as the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)",
             "type": "string"
           },
-          "documentType": {
-            "description": "Type of document",
-            "enum": ["KML", "GEOJSON"]
+          "documentMIMEType": {
+            "description": "MIME Type of document.  Common Types are KML (application/vnd.google-earth.kml+xml), and GeoJSON (application/vnd.geo+json)",
+            "type": "string"
           }
         },
         "required": ["documentURI", "documentType"]
@@ -611,10 +604,6 @@
   }, {
     "$ref": "#/definitions/IGeoRectangle"
   }, {
-    "$ref": "#/definitions/IGeoSquare"
-  },{
-    "$ref": "#/definitions/IGeoCircle"
-  },{
     "$ref": "#/definitions/IGeoEllipse"
   }, {
     "$ref": "#/definitions/IGeoImageOverlay"
