@@ -76,9 +76,9 @@
             "items": {
               "$ref": "#/definitions/IGeoTimeSpan"
             }
-          },
-          "required": ["positions"]
-        }
+          }
+        },
+        "required": ["positions"]
       }]
     },
     "IGeoPositionHistory": {
@@ -361,7 +361,7 @@
           "buffer": {
             "type": "number",
             "description": "Indicates if a buffer object in meters can be applied to a single, or list of positions as an extension outwards from the original position(s)",
-            "default" : 0
+            "default": 0
           },
           "azimuth": {
             "type": "number",
