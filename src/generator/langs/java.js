@@ -343,8 +343,9 @@ module.exports = {
         if (item.hasOwnProperty("$ref")) {
           if (index === 0) {
             refs = " extends " + that.interfaceToClassName(item["$ref"].replace("#/definitions/", ""));
+            refs += " implements " + name + " ";
           } //else if (index === 1) {
-          refs += " implements " + name + " ";
+          
           // } else {
           //   refs += ", ";
           // }
