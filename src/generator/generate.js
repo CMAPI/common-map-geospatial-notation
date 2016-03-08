@@ -1,6 +1,6 @@
 var fs = require('fs');
 var debug = false;
-var filePath = "/../schema/cmapi2.schema.json";
+var filePath = "/../schema/geonotation.schema.json";
 
 if (process.argv[2] === "-debug") {
   debug = true;
@@ -33,8 +33,8 @@ function loadJSONfile(filename, encoding) {
 // set the content of the loaded schmea into the myData object
 var schema = loadJSONfile(__dirname + filePath),
   // Include the Java lang generator
-  langJava = require("./langs/java2.js"),
-  langD3 = require("./langs/d3.js"),
+  langJava = require("./langs/java.js"),
+  //langD3 = require("./langs/d3.js"),
   namspace = "org.cmapi.primitives",
   // Include the c# lang generator
   //langCSharp = require("./langs/cs.js"),
