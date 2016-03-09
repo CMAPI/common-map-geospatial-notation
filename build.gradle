@@ -1,0 +1,130 @@
+import de.undercouch.gradle.tasks.download.Download
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.5.0'
+    }
+}
+
+plugins {
+    id "de.undercouch.download" version "2.1.0"
+    id "com.moowork.node"       version "0.11"
+}
+
+ext {
+    isRelease = project.hasProperty('release') ? true : false
+
+    group   = "org.cmapi.primitives"
+    version = '0.0.1.' + (System.getenv("BUILD_NUMBER") ?: "0")
+
+    if (!isRelease) {
+        version += '-SNAPSHOT'
+    }
+    if (!project.hasProperty("empUsername")) {
+        empUsername = ''
+    }
+    if (!project.hasProperty("empPassword")) {
+        empPassword = ''
+    }
+}
+
+configure (rootProject) {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'com.moowork.node'
+
+    repositories {
+        jcenter()
+    }
+
+    def cmapiExtractedDir   = "$buildDir/common-map-geospatial-notation-master"
+    def cmapiGeneratedDir   = "$buildDir/generated/cmapi"
+    def cmapiJsonSchemaFile = "$cmapiExtractedDir/src/schema/geonotation.schema.json"
+
+    sourceSets.main.java.srcDirs += cmapiGeneratedDir
+
+    javadoc {
+        source = sourceSets.main.allJava
+        failOnError true
+        exclude '**/*.md'
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    task downloadAndUnzipCMAPI(type: Download, description: "Downloads and unzips the CMAPI from GitHub repository") {
+        src 'https://github.com/CMAPI/common-map-geospatial-notation/archive/master.zip'
+        dest "$buildDir/master.zip"
+
+        doLast {
+            println "Extracting master.zip to: $buildDir"
+            copy {
+                from zipTree(dest)
+                into buildDir
+            }
+        }
+        outputs.file "$buildDir/master.zip" //tmp solution to prevent downloading on each build
+    }
+
+    task generateJavaBindingsCMAPI(dependsOn: downloadAndUnzipCMAPI, type: NodeTask, description: "Generates the CMAPI interface classes") {
+        script = file("$cmapiExtractedDir/src/generator/generate.js")
+        execOverrides {
+            it.workingDir = "$cmapiExtractedDir/src/generator"
+        }
+        doLast {
+            copy {
+                from "$cmapiExtractedDir/src/generator/dist/java"
+                into cmapiGeneratedDir
+            }
+        }
+        outputs.dir cmapiGeneratedDir
+    }
+    compileJava.dependsOn generateJavaBindingsCMAPI
+
+    node {
+        version  = '4.3.1'
+        download = true
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId    = rootProject.ext.group
+                artifactId = project.name
+                version    = rootProject.ext.version
+
+                artifact jar
+                artifact javadocJar
+                artifact { file cmapiJsonSchemaFile }
+            }
+        }
+        repositories {
+            maven {
+                //url "$rootProject.buildDir/_repo"
+                url = isRelease ? nexusReleaseUrl : nexusSnapshotUrl
+
+                credentials {
+                    username empUsername
+                    password empPassword
+                }
+            }
+        }
+    }
+}
+
+task wrapper(type: Wrapper, description: "Generates gradlew[.bat] scripts") {
+    gradleVersion = '2.11'
+}
+
+if (JavaVersion.current().isJava8Compatible()) { // disable lint for java8
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+}
