@@ -30,15 +30,39 @@ module.exports = {
   },
   getDefaultValue: function(schema, type) {
     var defaultValue = "";
-    if (schema.hasOwnProperty("default")) {
-      switch (type) {
-        case "String":
-          defaultValue = " = \"" + schema.default+"\"";
+    if (type) {
+
+      switch (type.toLowerCase()) {
+        case "string":
+          if (schema.hasOwnProperty("default")) {
+            defaultValue = " = \"" + schema.default+"\"";
+          } else {
+
+            defaultValue = " = \"\"";
+          }
           break;
-        case "Double":
-          defaultValue = " = " + schema.default;
+        case "double":
+          if (schema.hasOwnProperty("default")) {
+            defaultValue = " = " + schema.default;
+          }
+          break;
+        case "boolean":
+          if (schema.hasOwnProperty("default")) {
+            defaultValue = " = " + schema.default;
+          }
+          break;
+        default:
+          if (type.indexOf("java.util.List") != -1) {
+            defaultValue = " = new " + type.replace("java.util.List", "java.util.ArrayList") + "()";
+          } else if (type.indexOf("java.") === -1 && type.indexOf(".") === -1) {
+
+            defaultValue = " = new " + this.interfaceToClassName(type) + "()";
+          } else if(schema.hasOwnProperty("enum") && schema.hasOwnProperty("default")){
+            defaultValue = " = " + type+"."+schema.default;
+          }
           break;
       }
+
     }
     return defaultValue;
   },
@@ -59,7 +83,7 @@ module.exports = {
       propVal = schema.properties[prop];
       type = this.getType(propVal, prop, name);
 
-      privates.push("    private " + type + " " + prop + this.getDefaultValue(propVal) + ";");
+      privates.push("    private " + type + " " + prop + this.getDefaultValue(propVal, type) + ";");
       // Make first character of property name uppercase for get / set camel casing
       uProp = this.makeFirstUpperCase(prop);
       properties.push('\n  /**');
@@ -192,6 +216,9 @@ module.exports = {
         case "object":
           type = name;
           //type = this.namespace + "." + name;
+          break;
+        case "boolean":
+          type = "boolean";
           break;
         case "void":
           type = "void";
@@ -343,9 +370,9 @@ module.exports = {
         if (item.hasOwnProperty("$ref")) {
           if (index === 0) {
             refs = " extends " + that.interfaceToClassName(item["$ref"].replace("#/definitions/", ""));
-            refs += " implements " + name + " ";
+            
           } //else if (index === 1) {
-          
+
           // } else {
           //   refs += ", ";
           // }
@@ -378,7 +405,7 @@ module.exports = {
         }
       }
     }
-
+refs += " implements " + name + " ";
     if (schema.hasOwnProperty("methods")) {
       for (prop in schema.methods) {
 

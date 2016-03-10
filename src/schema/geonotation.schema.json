@@ -5,7 +5,8 @@
       "properties": {
         "altitudeMode": {
           "description": "Enumeration of altitude modes to define how the alititude value in an IGeoPosition alt (altitude) property will be interpreted",
-          "enum": ["CLAMP_TO_GROUND", "REALTIVE_TO_GROUND", "ABSOLUTE"]
+          "enum": ["CLAMP_TO_GROUND", "REALTIVE_TO_GROUND", "ABSOLUTE"],
+          "default" : "CLAMP_TO_GROUND"
         }
       }
     },
@@ -106,22 +107,26 @@
             "type": "number",
             "description": "Rotation, in degrees, of the camera around the X axis. A value of 0 indicates that the view is aimed straight down toward the earth (the most common case). A value for 90 for <tilt> indicates that the view is aimed toward the horizon. Values greater than 90 indicate that the view is pointed up into the sky. Values for <tilt> are clamped at +180 degrees",
             "minimum": 0,
-            "maximum": 179
+            "maximum": 179,
+            "default" : 0
           },
           "roll": {
             "type": "number",
             "minimum": 0,
             "maximum": 179,
+            "default" : 0,
             "description": "Rotation, in degrees, of the camera around the Z axis. Values range from −180 to +180 degrees"
           },
           "azimuth": {
             "type": "number",
             "minimum": 0,
             "maximum": 359,
+            "default" : 0,
             "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). Values range from 0 to 360 degrees"
           },
           "range": {
             "type": "number",
+            "default" : 1000000,
             "description": "Distance in meters from the point specified by <longitude>, <latitude>, and <altitude> to the LookAt position"
           }
         }
@@ -141,16 +146,19 @@
             "type": "number",
             "description": "Rotation, in degrees, of the camera around the X axis. A value of 0 indicates that the view is aimed straight down toward the earth (the most common case). A value for 90 for <tilt> indicates that the view is aimed toward the horizon. Values greater than 90 indicate that the view is pointed up into the sky. Values for <tilt> are clamped at +180 degrees. ",
             "minimum": 0,
-            "maximum": 179
+            "maximum": 179,
+            "default" : 0
           },
           "azimuth": {
             "type": "number",
             "minimum": 0,
             "maximum": 359,
+            "default" : 0,
             "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). (See diagram below.) Values range from 0 to 360 degrees"
           },
           "range": {
             "type": "number",
+            "default" : 1000000,
             "description": "Distance in meters from the point specified by IGeoPosition to the LookAt position"
           }
         }
@@ -238,7 +246,8 @@
           "$ref": "#/definitions/IGeoColor"
         },
         "strokePattern": {
-          "enum": ["solid", "dashed", "dotted"]
+          "enum": ["solid", "dashed", "dotted"],
+          "default": "solid"
         },
         "strokeWidth": {
           "type": "number",
@@ -268,7 +277,8 @@
         "size": {
           "description": "Size in pixels.  If the icon is not square, the size will represent the larger value of the rectangle",
           "type": "number",
-          "minimum": 1
+          "minimum": 1,
+          "default": 32
         },
         "offSetX": {
           "description": "X Offest of icon in pixels derived from the lower left point of the icon",
@@ -316,7 +326,7 @@
         },
         "readOnly": {
           "type": "boolean",
-          "deafult": "false"
+          "default": false
         }
       },
       "required": ["name", "id", "description", "readOnly"]
@@ -448,12 +458,12 @@
           "semiMajor": {
             "description": "The magnitude of the semi-major axis - Radius of the ellipse in meters on the x axis (width)",
             "type": "number",
-            "default": 100
+            "default": 150
           },
           "semiMinor": {
             "description": "The magnitude of the semi-minor axis - Radius of the ellipse in meters on the y axis (height)",
             "type": "number",
-            "default": 50
+            "default": 75
           }
         },
         "required": ["semiMajor", "semiMinor"]
@@ -466,11 +476,13 @@
         "properties": {
           "width": {
             "description": "Width of the rectangle in meters on the x axis",
-            "type": "number"
+            "type": "number",
+            "default" : 150
           },
           "height": {
             "description": "Height of the rectangle in meters on the y axis",
-            "type": "number"
+            "type": "number",
+            "default" : 75
           }
         },
         "required": ["width", "height"]
@@ -483,7 +495,8 @@
         "properties": {
           "width": {
             "description": "Width of the square in meters on the x axis ",
-            "type": "number"
+            "type": "number",
+            "default" : 100
           }
         },
         "required": ["width"]
@@ -505,9 +518,10 @@
       "type": "object",
       "description": "Defines a specific modifier from MIL-STD-2525 based on an enumeration of options",
       "properties": {
-        "milModifierName": {
-          "desciption": "Value of the MIL-STD-2525 modifier name from an enumeration of options",
-          "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "H1", "H2", "J", "K", "L", "M", "N", "P", "Q", "R", "R2", "S", "T", "T1", "V", "W", "W1", "X", "Y", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "CC", "CN", "SCC"]
+        "key": {
+          "description": "Value of the MIL-STD-2525 modifier name from an enumeration of options",
+          "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "H1", "H2", "J", "K", "L", "M", "N", "P", "Q", "R", "R2", "S", "T", "T1", "V", "W", "W1", "X", "Y", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "CC", "CN", "SCC"],
+          "enumKeys": ["SYMBOL_ICON" ]
         },
         "value": {
           "description": "MIL-STD-2525 modifier values often allow for multiple types such as in one case a single integer which can also be repsresented as an array of integers.  In order to avoid exterme complication and consitional logic in a schema, the value can be represented as a JSON simple type.  The MIL-STD-2525 rendering solution can translate the JSON sting into the appropriate runtime data type",
@@ -535,18 +549,27 @@
           "symbolStandard": {
             "description": "Version of the MIL-STD-2525 standard to use",
             "enum": ["MIL_STD_2525C", "MIL_STD_2525B"],
-            "type": "string"
+            "default": "MIL_STD_2525C"
           },
           "symbolCode": {
             "description": "Symbol code as defined by MIL-STD-2525",
-            "type": "string"
+            "type": "string",
+            "default" : "SUGP-----------"
           },
           "modifiers": {
             "type": "array",
+            "langType": {
+              "java": "Java.util.HashSet"
+            },
             "description": "List of modifiers elements defining symbol per MIL-STD-2525",
             "items": {
               "$ref": "#/definitions/IGeoMilModifier"
             }
+          },
+          "modifierOptions": {
+            "description": "Value of the MIL-STD-2525 modifier name from an enumeration of options",
+            "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "H1", "H2", "J", "K", "L", "M", "N", "P", "Q", "R", "R2", "S", "T", "T1", "V", "W", "W1", "X", "Y", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "CC", "CN", "SCC"],
+            "enumKeys": ["SYMBOL_ICON"]
           }
         },
         "required": ["symbolStandard", "symbolCode", "modifiers"]
