@@ -15,6 +15,10 @@ module.exports = {
       if (propVal.hasOwnProperty("enum")) {
         properties.push(this.createEnum(prop, propVal.enum));
       }
+
+      if (propVal.hasOwnProperty("typeExtension") && propVal.typeExtension.type === "enum") {
+        properties.push(this.createObjectEnum(propVal.typeExtension.name, propVal));
+      }
       // Make first character of property name uppercase for get / set camel casing
       uProp = this.makeFirstUpperCase(prop);
       properties.push('\n  /**');
@@ -57,9 +61,12 @@ module.exports = {
           } else if (type.indexOf("java.") === -1 && type.indexOf(".") === -1) {
 
             defaultValue = " = new " + this.interfaceToClassName(type) + "()";
-          } else if(schema.hasOwnProperty("enum") && schema.hasOwnProperty("default")){
-            defaultValue = " = " + type+"."+schema.default;
+          } else if (schema.hasOwnProperty("enum") && schema.hasOwnProperty("default")) {
+            defaultValue = " = " + type + "." + schema.default;
+          } else if (schema.hasOwnProperty("langType") && schema.langType.hasOwnProperty("java")) {
+            defaultValue = " = new " + schema.langType.java + "()";
           }
+
           break;
       }
 
@@ -200,7 +207,9 @@ module.exports = {
   getType: function(property, name, parentName) {
     // Default to string in case no type is available
     var type = "String";
-    if (property.hasOwnProperty("type")) {
+    if (property.hasOwnProperty("langType") && property.langType.hasOwnProperty("java")) {
+      type = property.langType.java;
+    } else if (property.hasOwnProperty("type")) {
       switch (property.type) {
         case "number":
           type = "double";
@@ -229,7 +238,7 @@ module.exports = {
       //type = property["$ref"].replace("#/definitions/", this.namespace + ".");
 
     } else if (property.hasOwnProperty("enum")) {
-      type = parentName + "." + name;
+      type = parentName + "." + this.makeFirstUpperCase(name);
       //type = this.namespace + "." + parentName + "." + name;
     }
     return type;
@@ -238,6 +247,7 @@ module.exports = {
     var enums = [],
       len = list.length,
       i;
+      name = this.makeFirstUpperCase(name);
     enums.push("\n  public enum " + name + " {\n");
     for (i = 0; i < len; i++) {
       enums.push("    " + list[i]);
@@ -245,6 +255,50 @@ module.exports = {
         enums.push(", ");
       }
       enums.push("\n");
+    }
+    enums.push("  }\n");
+    return enums.join("");
+  },
+  // Turn a JSON Schema object into an enum to be used by a HashMap to behave like a JSON associative array (object)
+  createObjectEnum: function(name, list) {
+    var enums = [],
+      len = list.length,
+      itemKey,
+      itemValue,
+      i = 0,
+      hasLabels = false;
+
+    name = this.makeFirstUpperCase(name);
+    enums.push("\n  public enum " + name + " {\n");
+    for (item in list.properties) {
+      itemValue = list.properties[item];
+      if (i > 0) {
+        enums.push(", ");
+        enums.push("\n");
+      }
+      if (itemValue.hasOwnProperty("enumLabel")) {
+        hasLabels = true;
+        enums.push("    " + itemValue.enumLabel + "(\"" + item + "\")");
+      } else {
+        enums.push("    " + item);
+      }
+
+      i++;
+
+    }
+    if (i > 0) {
+      enums.push(";\n\n");
+    }
+    if (hasLabels === true) {
+      enums.push("    private String value;\n\n");
+
+      enums.push("    private " + name + "(String value) {\n");
+      enums.push("      this.value = value;\n");
+      enums.push("    }\n\n");
+
+      enums.push("    public String valueOf() {\n");
+      enums.push("      return this.value;\n");
+      enums.push("    }\n");
     }
     enums.push("  }\n");
     return enums.join("");
@@ -286,7 +340,9 @@ module.exports = {
       //Iterate over properties that are defined within this schema
       if (schema.hasOwnProperty("properties")) {
         for (prop in schema.properties) {
+
           properties.push(this.parseProperty(prop, schema, name));
+
         }
       }
     }
@@ -370,7 +426,7 @@ module.exports = {
         if (item.hasOwnProperty("$ref")) {
           if (index === 0) {
             refs = " extends " + that.interfaceToClassName(item["$ref"].replace("#/definitions/", ""));
-            
+
           } //else if (index === 1) {
 
           // } else {
@@ -405,7 +461,7 @@ module.exports = {
         }
       }
     }
-refs += " implements " + name + " ";
+    refs += " implements " + name + " ";
     if (schema.hasOwnProperty("methods")) {
       for (prop in schema.methods) {
 
