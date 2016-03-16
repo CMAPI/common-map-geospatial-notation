@@ -58,6 +58,8 @@ module.exports = {
         default:
           if (type.indexOf("java.util.List") != -1) {
             defaultValue = " = new " + type.replace("java.util.List", "java.util.ArrayList") + "()";
+          } else if (type.indexOf("java.util.UUID") != -1) {
+            defaultValue = " = " + type.replace("java.util.UUID", "java.util.UUID.randomUUID()");
           } else if (type.indexOf("java.") === -1 && type.indexOf(".") === -1) {
 
             defaultValue = " = new " + this.interfaceToClassName(type) + "()";

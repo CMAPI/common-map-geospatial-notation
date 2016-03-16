@@ -12,7 +12,7 @@
     },
     "IGeoTimeSpan": {
       "type": "object",
-      "description": "Defines a range in time that represents a beginning and end.",
+      "description": "Defines a range in time that represents a beginning and end.  This can be used to describe things such as avilability, visibilty, active/inactive for provided periods of time.  From a filtering point of view, if a time filter is applied a feature would only be visible on a map view within the dfined timespan(s)",
       "properties": {
         "begin": {
           "description": "Starting date time value as defined by http://tools.ietf.org/html/rfc3339",
@@ -74,6 +74,7 @@
           },
           "timeSpans": {
             "type": "array",
+            "description": "Defines one or more periods of time something occured, or was active.",
             "items": {
               "$ref": "#/definitions/IGeoTimeSpan"
             }
@@ -97,7 +98,7 @@
     "IGeoCamera": {
       "type": "object",
       "description": "Defines the virtual camera that views the scene. This element defines the position of the camera relative to the Earth's surface as well as the viewing direction of the camera. The camera position is defined by <longitude>, <latitude>, <altitude>, and either <altitudeMode>. The viewing direction of the camera is defined by <azimuth>, <tilt>, and <roll>. An IGeoCamera provides full six-degrees-of-freedom control over the view, so you can position the Camera in space and then rotate it around the X, Y, and Z axes. Most importantly, you can tilt the camera view so that you're looking above the horizon into the sky. The order of rotation is important. By default, the camera is looking straight down the −Z axis toward the Earth. Before rotations are performed, the camera is translated along the Z axis to <altitude>. The order of transformations is as follows: <altitude> - translate along the Z axis to <altitude><azimuth> - rotate around the Z axis.<tilt> - rotate around the X axis.<roll> - rotate around the Z axis (again). Note that each time a rotation is applied, two of the camera axes change their orientation.",
-      "allOf": [{
+      "allOf": [{ "$ref": "#/definitions/IGeoBase" }, {
         "$ref": "#/definitions/IGeoAltitudeMode"
       }, {
         "$ref": "#/definitions/IGeoPosition"
@@ -136,7 +137,7 @@
     "IGeoLookAt": {
       "type": "object",
       "description": "The LookAt element positions the 'camera' in relation to the IGeoPosition that is being viewed",
-      "allOf": [{
+      "allOf": [{ "$ref": "#/definitions/IGeoBase" }, {
         "$ref": "#/definitions/IGeoAltitudeMode"
       }, {
         "$ref": "#/definitions/IGeoPosition"
@@ -152,9 +153,9 @@
           "azimuth": {
             "type": "number",
             "minimum": 0,
-            "maximum": 359,
+            "maximum": 359.99,
             "default": 0,
-            "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). (See diagram below.) Values range from 0 to 360 degrees"
+            "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). Values range from 0 to 360 degrees"
           },
           "range": {
             "type": "number",
@@ -316,17 +317,16 @@
           "description": "Name is used to display text labels alonside to a feature and can be used in user interfaces that manage the data on the map",
           "default": ""
         },
-        "id": {
+        "geoId": {
           "description": "The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element",
-          "type": "string"
+          "type": "string",
+          "langType": {
+            "java": "java.util.UUID"
+          }
         },
         "description": {
           "type": "string",
           "default": ""
-        },
-        "readOnly": {
-          "type": "boolean",
-          "default": false
         }
       },
       "required": ["name", "id", "description", "readOnly"]
@@ -378,6 +378,10 @@
             "minimum": 0,
             "maximum": 359,
             "default": 0
+          },
+          "readOnly": {
+            "type": "boolean",
+            "default": false
           }
         },
         "required": ["labelStyle"]
