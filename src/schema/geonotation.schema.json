@@ -118,21 +118,16 @@
             "default": 0,
             "description": "Rotation, in degrees, of the camera around the Z axis. Values range from −180 to +180 degrees"
           },
-          "azimuth": {
+          "heading": {
             "type": "number",
             "minimum": 0,
             "maximum": 359,
             "default": 0,
             "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). Values range from 0 to 360 degrees"
-          },
-          "range": {
-            "type": "number",
-            "default": 1000000,
-            "description": "Distance in meters from the point specified by <longitude>, <latitude>, and <altitude> to the LookAt position"
           }
         }
       }],
-      "required": ["tilt", "roll", "range", "azimuth"]
+      "required": ["tilt", "roll", "heading"]
     },
     "IGeoLookAt": {
       "type": "object",
@@ -150,7 +145,7 @@
             "maximum": 179,
             "default": 0
           },
-          "azimuth": {
+          "heading": {
             "type": "number",
             "minimum": 0,
             "maximum": 359.99,
@@ -164,7 +159,7 @@
           }
         }
       }],
-      "required": ["tilt", "azimuth", "range"]
+      "required": ["tilt", "heading", "range"]
     },
     "IGeoBounds": {
       "type": "object",
