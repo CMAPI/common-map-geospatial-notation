@@ -12,20 +12,11 @@ plugins {
 }
 
 ext {
+    group = "org.cmapi.primitives"
+
+    description = "Common Map Geospatial Notation (CMGN)"
+
     isRelease = project.hasProperty('release') ? true : false
-
-    group   = "org.cmapi.primitives"
-    version = '0.0.1.' + (System.getenv("BUILD_NUMBER") ?: "0")
-
-    if (!isRelease) {
-        version += '-SNAPSHOT'
-    }
-    if (!project.hasProperty("empUsername")) {
-        empUsername = ''
-    }
-    if (!project.hasProperty("empPassword")) {
-        empPassword = ''
-    }
 }
 
 configure (rootProject) {
@@ -76,9 +67,9 @@ configure (rootProject) {
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                groupId    = rootProject.ext.group
+                groupId    = project.ext.group
                 artifactId = project.name
-                version    = rootProject.ext.version
+                version    = project.version
 
                 artifact jar
                 artifact javadocJar
@@ -88,11 +79,11 @@ configure (rootProject) {
         repositories {
             maven {
                 //url "$rootProject.buildDir/_repo"
-                url = isRelease ? nexusReleaseUrl : nexusSnapshotUrl
+                url = project.hasProperty('repositoryUrl') ? project.property('repositoryUrl') : ''
 
                 credentials {
-                    username empUsername
-                    password empPassword
+                    username project.hasProperty('empUsername') ? project.property('empUsername') : ''
+                    password project.hasProperty('empPassword') ? project.property('empPassword') : ''
                 }
             }
         }
@@ -100,7 +91,7 @@ configure (rootProject) {
 }
 
 task wrapper(type: Wrapper, description: "Generates gradlew[.bat] scripts") {
-    gradleVersion = '2.11'
+    gradleVersion = '2.12'
 }
 
 if (JavaVersion.current().isJava8Compatible()) { // disable lint for java8
