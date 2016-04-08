@@ -5,13 +5,14 @@
       "properties": {
         "altitudeMode": {
           "description": "Enumeration of altitude modes to define how the alititude value in an IGeoPosition alt (altitude) property will be interpreted",
-          "enum": ["CLAMP_TO_GROUND", "REALTIVE_TO_GROUND", "ABSOLUTE"]
+          "enum": ["CLAMP_TO_GROUND", "REALTIVE_TO_GROUND", "ABSOLUTE"],
+          "default": "CLAMP_TO_GROUND"
         }
       }
     },
     "IGeoTimeSpan": {
       "type": "object",
-      "description": "Defines a range in time that represents a beginning and end.",
+      "description": "Defines a range in time that represents a beginning and end.  This can be used to describe things such as avilability, visibilty, active/inactive for provided periods of time.  From a filtering point of view, if a time filter is applied a feature would only be visible on a map view within the dfined timespan(s)",
       "properties": {
         "begin": {
           "description": "Starting date time value as defined by http://tools.ietf.org/html/rfc3339",
@@ -73,6 +74,7 @@
           },
           "timeSpans": {
             "type": "array",
+            "description": "Defines one or more periods of time something occured, or was active.",
             "items": {
               "$ref": "#/definitions/IGeoTimeSpan"
             }
@@ -96,7 +98,7 @@
     "IGeoCamera": {
       "type": "object",
       "description": "Defines the virtual camera that views the scene. This element defines the position of the camera relative to the Earth's surface as well as the viewing direction of the camera. The camera position is defined by <longitude>, <latitude>, <altitude>, and either <altitudeMode>. The viewing direction of the camera is defined by <azimuth>, <tilt>, and <roll>. An IGeoCamera provides full six-degrees-of-freedom control over the view, so you can position the Camera in space and then rotate it around the X, Y, and Z axes. Most importantly, you can tilt the camera view so that you're looking above the horizon into the sky. The order of rotation is important. By default, the camera is looking straight down the −Z axis toward the Earth. Before rotations are performed, the camera is translated along the Z axis to <altitude>. The order of transformations is as follows: <altitude> - translate along the Z axis to <altitude><azimuth> - rotate around the Z axis.<tilt> - rotate around the X axis.<roll> - rotate around the Z axis (again). Note that each time a rotation is applied, two of the camera axes change their orientation.",
-      "allOf": [{
+      "allOf": [{ "$ref": "#/definitions/IGeoBase" }, {
         "$ref": "#/definitions/IGeoAltitudeMode"
       }, {
         "$ref": "#/definitions/IGeoPosition"
@@ -106,32 +108,31 @@
             "type": "number",
             "description": "Rotation, in degrees, of the camera around the X axis. A value of 0 indicates that the view is aimed straight down toward the earth (the most common case). A value for 90 for <tilt> indicates that the view is aimed toward the horizon. Values greater than 90 indicate that the view is pointed up into the sky. Values for <tilt> are clamped at +180 degrees",
             "minimum": 0,
-            "maximum": 179
+            "maximum": 179,
+            "default": 0
           },
           "roll": {
             "type": "number",
             "minimum": 0,
             "maximum": 179,
+            "default": 0,
             "description": "Rotation, in degrees, of the camera around the Z axis. Values range from −180 to +180 degrees"
           },
-          "azimuth": {
+          "heading": {
             "type": "number",
             "minimum": 0,
             "maximum": 359,
+            "default": 0,
             "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). Values range from 0 to 360 degrees"
-          },
-          "range": {
-            "type": "number",
-            "description": "Distance in meters from the point specified by <longitude>, <latitude>, and <altitude> to the LookAt position"
           }
         }
       }],
-      "required": ["tilt", "roll", "range", "azimuth"]
+      "required": ["tilt", "roll", "heading"]
     },
     "IGeoLookAt": {
       "type": "object",
       "description": "The LookAt element positions the 'camera' in relation to the IGeoPosition that is being viewed",
-      "allOf": [{
+      "allOf": [{ "$ref": "#/definitions/IGeoBase" }, {
         "$ref": "#/definitions/IGeoAltitudeMode"
       }, {
         "$ref": "#/definitions/IGeoPosition"
@@ -141,21 +142,24 @@
             "type": "number",
             "description": "Rotation, in degrees, of the camera around the X axis. A value of 0 indicates that the view is aimed straight down toward the earth (the most common case). A value for 90 for <tilt> indicates that the view is aimed toward the horizon. Values greater than 90 indicate that the view is pointed up into the sky. Values for <tilt> are clamped at +180 degrees. ",
             "minimum": 0,
-            "maximum": 179
+            "maximum": 179,
+            "default": 0
           },
-          "azimuth": {
+          "heading": {
             "type": "number",
             "minimum": 0,
-            "maximum": 359,
-            "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). (See diagram below.) Values range from 0 to 360 degrees"
+            "maximum": 359.99,
+            "default": 0,
+            "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). Values range from 0 to 360 degrees"
           },
           "range": {
             "type": "number",
+            "default": 1000000,
             "description": "Distance in meters from the point specified by IGeoPosition to the LookAt position"
           }
         }
       }],
-      "required": ["tilt", "azimuth", "range"]
+      "required": ["tilt", "heading", "range"]
     },
     "IGeoBounds": {
       "type": "object",
@@ -238,7 +242,8 @@
           "$ref": "#/definitions/IGeoColor"
         },
         "strokePattern": {
-          "enum": ["solid", "dashed", "dotted"]
+          "enum": ["solid", "dashed", "dotted"],
+          "default": "solid"
         },
         "strokeWidth": {
           "type": "number",
@@ -268,7 +273,8 @@
         "size": {
           "description": "Size in pixels.  If the icon is not square, the size will represent the larger value of the rectangle",
           "type": "number",
-          "minimum": 1
+          "minimum": 1,
+          "default": 32
         },
         "offSetX": {
           "description": "X Offest of icon in pixels derived from the lower left point of the icon",
@@ -306,17 +312,16 @@
           "description": "Name is used to display text labels alonside to a feature and can be used in user interfaces that manage the data on the map",
           "default": ""
         },
-        "id": {
+        "geoId": {
           "description": "The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element",
-          "type": "string"
+          "type": "string",
+          "langType": {
+            "java": "java.util.UUID"
+          }
         },
         "description": {
           "type": "string",
           "default": ""
-        },
-        "readOnly": {
-          "type": "boolean",
-          "deafult": "false"
         }
       },
       "required": ["name", "id", "description", "readOnly"]
@@ -368,6 +373,10 @@
             "minimum": 0,
             "maximum": 359,
             "default": 0
+          },
+          "readOnly": {
+            "type": "boolean",
+            "default": false
           }
         },
         "required": ["labelStyle"]
@@ -448,12 +457,12 @@
           "semiMajor": {
             "description": "The magnitude of the semi-major axis - Radius of the ellipse in meters on the x axis (width)",
             "type": "number",
-            "default": 100
+            "default": 150
           },
           "semiMinor": {
             "description": "The magnitude of the semi-minor axis - Radius of the ellipse in meters on the y axis (height)",
             "type": "number",
-            "default": 50
+            "default": 75
           }
         },
         "required": ["semiMajor", "semiMinor"]
@@ -466,11 +475,13 @@
         "properties": {
           "width": {
             "description": "Width of the rectangle in meters on the x axis",
-            "type": "number"
+            "type": "number",
+            "default": 150
           },
           "height": {
             "description": "Height of the rectangle in meters on the y axis",
-            "type": "number"
+            "type": "number",
+            "default": 75
           }
         },
         "required": ["width", "height"]
@@ -483,7 +494,8 @@
         "properties": {
           "width": {
             "description": "Width of the square in meters on the x axis ",
-            "type": "number"
+            "type": "number",
+            "default": 100
           }
         },
         "required": ["width"]
@@ -501,32 +513,6 @@
         }
       }]
     },
-    "IGeoMilModifier": {
-      "type": "object",
-      "description": "Defines a specific modifier from MIL-STD-2525 based on an enumeration of options",
-      "properties": {
-        "milModifierName": {
-          "desciption": "Value of the MIL-STD-2525 modifier name from an enumeration of options",
-          "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "H1", "H2", "J", "K", "L", "M", "N", "P", "Q", "R", "R2", "S", "T", "T1", "V", "W", "W1", "X", "Y", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "CC", "CN", "SCC"]
-        },
-        "value": {
-          "description": "MIL-STD-2525 modifier values often allow for multiple types such as in one case a single integer which can also be repsresented as an array of integers.  In order to avoid exterme complication and consitional logic in a schema, the value can be represented as a JSON simple type.  The MIL-STD-2525 rendering solution can translate the JSON sting into the appropriate runtime data type",
-          "type": "string"
-        }
-      }
-    },
-    "IGeoAirControlMeasureModifier": {
-      "type": "object",
-      "properties": {
-        "acmModifierName": {
-          "enum": ["RADIUS", "INNER_RADIUS", "TURN", "MIN_ALT", "MAX_ALT", "LEFT_AZIMUTH", "RIGHT_AZIMUTH", "WIDTH", "LEFT_WIDTH", "RIGHT_WIDTH"]
-        },
-        "value": {
-          "description": "",
-          "type": "string"
-        }
-      }
-    },
     "IGeoMilSymbol": {
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
@@ -535,17 +521,203 @@
           "symbolStandard": {
             "description": "Version of the MIL-STD-2525 standard to use",
             "enum": ["MIL_STD_2525C", "MIL_STD_2525B"],
-            "type": "string"
+            "default": "MIL_STD_2525C"
           },
           "symbolCode": {
             "description": "Symbol code as defined by MIL-STD-2525",
-            "type": "string"
+            "type": "string",
+            "default": "SUGP-----------"
           },
           "modifiers": {
-            "type": "array",
-            "description": "List of modifiers elements defining symbol per MIL-STD-2525",
-            "items": {
-              "$ref": "#/definitions/IGeoMilModifier"
+            "type": "object",
+            "langType": {
+              "java": "java.util.HashMap<IGeoMilSymbol.Modifier, String>"
+            },
+            "typeExtension": {
+              "type": "enum",
+              "name": "modifier"
+            },
+            "properties": {
+              "A": {
+                "type": "string",
+                "enumLabel": "SYMBOL_ICON"
+              },
+              "B": {
+                "type": "string",
+                "enumLabel": "ECHELON"
+              },
+              "C": {
+                "type": "string",
+                "enumLabel": "QUANTITY"
+              },
+              "D": {
+                "type": "string",
+                "enumLabel": "TASK_FORCE_INDICATOR"
+              },
+              "E": {
+                "type": "string",
+                "enumLabel": "FRAME_SHAPE_MODIFIER"
+              },
+              "F": {
+                "type": "string",
+                "enumLabel": "REDUCED_OR_REINFORCED"
+              },
+              "G": {
+                "type": "string",
+                "enumLabel": "STAFF_COMMENTS"
+              },
+              "H": {
+                "type": "string",
+                "enumLabel": "ADDITIONAL_INFO_1"
+              },
+              "H1": {
+                "type": "string",
+                "enumLabel": "ADDITIONAL_INFO_2"
+              },
+              "H2": {
+                "type": "string",
+                "enumLabel": "ADDITIONAL_INFO_3"
+              },
+              "J": {
+                "type": "string",
+                "enumLabel": "EVALUATION_RATING"
+              },
+              "K": {
+                "type": "string",
+                "enumLabel": "COMBAT_EFFECTIVENESS"
+              },
+              "L": {
+                "type": "string",
+                "enumLabel": "SIGNATURE_EQUIPMENT"
+              },
+              "M": {
+                "type": "string",
+                "enumLabel": "HIGHER_FORMATION"
+              },
+              "N": {
+                "type": "string",
+                "enumLabel": "HOSTILE"
+              },
+              "P": {
+                "type": "string",
+                "enumLabel": "IFF_SIF"
+              },
+              "Q": {
+                "type": "string",
+                "enumLabel": "DIRECTION_OF_MOVEMENT"
+              },
+              "R": {
+                "type": "string",
+                "enumLabel": "MOBILITY_INDICATOR"
+              },
+              "R2": {
+                "type": "string",
+                "enumLabel": "SIGINT_MOBILITY_INDICATOR"
+              },
+              "S": {
+                "type": "string",
+                "enumLabel": "OFFSET_INDICATOR"
+              },
+              "T": {
+                "type": "string",
+                "enumLabel": "UNIQUE_DESIGNATOR_1"
+              },
+              "T1": {
+                "type": "string",
+                "enumLabel": "UNIQUE_DESIGNATOR_2"
+              },
+              "V": {
+                "type": "string",
+                "enumLabel": "EQUIPMENT_TYPE"
+              },
+              "W": {
+                "type": "string",
+                "enumLabel": "DATE_TIME_GROUP"
+              },
+              "W1": {
+                "type": "string",
+                "enumLabel": "DATE_TIME_GROUP_2"
+              },
+              "X": {
+                "type": "string",
+                "enumLabel": "ALTITUDE_DEPTH"
+              },
+              "Y": {
+                "type": "string",
+                "enumLabel": "LOCATION"
+              },
+              "Z": {
+                "type": "string",
+                "enumLabel": "SPEED"
+              },
+              "AA": {
+                "type": "string",
+                "enumLabel": "SPECIAL_C2_HEADQUARTERS"
+              },
+              "AB": {
+                "type": "string",
+                "enumLabel": "FEINT_DUMMY_INDICATOR"
+              },
+              "AC": {
+                "type": "string",
+                "enumLabel": "INSTALLATION"
+              },
+              "AD": {
+                "type": "string",
+                "enumLabel": "PLATFORM_TYPE"
+              },
+              "AE": {
+                "type": "string",
+                "enumLabel": "EQUIPMENT_TEARDOWN_TIME"
+              },
+              "AF": {
+                "type": "string",
+                "enumLabel": "COMMON_IDENTIFIER"
+              },
+              "AG": {
+                "type": "string",
+                "enumLabel": "AUXILIARY_EQUIPMENT_INDICATOR"
+              },
+              "AH": {
+                "type": "string",
+                "enumLabel": "AREA_OF_UNCERTAINTY"
+              },
+              "AI": {
+                "type": "string",
+                "enumLabel": "DEAD_RECKONING"
+              },
+              "AJ": {
+                "type": "string",
+                "enumLabel": "SPEED_LEADER"
+              },
+              "AK": {
+                "type": "string",
+                "enumLabel": "PAIRING_LINE"
+              },
+              "AL": {
+                "type": "string",
+                "enumLabel": "OPERATIONAL_CONDITION"
+              },
+              "AM": {
+                "type": "string",
+                "enumLabel": "DISTANCE"
+              },
+              "AN": {
+                "type": "string",
+                "enumLabel": "AZIMUTH"
+              },
+              "AO": {
+                "type": "string",
+                "enumLabel": "ENGAGEMENT_BAR"
+              },
+              "CC": {
+                "type": "string",
+                "enumLabel": "COUNTRY_CODE"
+              },
+              "SCC": {
+                "type": "string",
+                "enumLabel": "SONAR_CLASSIFICATION_CONFIDENCE"
+              }
             }
           }
         },
@@ -561,10 +733,46 @@
             "description": "Symbol code as defined by MIL-STD-2525",
             "enum": ["ROUTE", "CYLINDER", "ORBIT", "POLYGON", "RADARC", "POLYARC", "TRACK", "CURTAIN"]
           },
-          "acmAttributes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/IGeoAirControlMeasureModifier"
+          "attributes": {
+            "type": "object",
+            "langType": {
+              "java": "java.util.HashMap<IGeoAirControlMeasure.Attribute, String>"
+            },
+            "typeExtension": {
+              "type": "enum",
+              "name": "attribute"
+            },
+            "properties": {
+              "RADIUS": {
+                "type": "string"
+              },
+              "INNER_RADIUS": {
+                "type": "string"
+              },
+              "TURN": {
+                "type": "string"
+              },
+              "MIN_ALT": {
+                "type": "string"
+              },
+              "MAX_ALT": {
+                "type": "string"
+              },
+              "LEFT_AZIMUTH": {
+                "type": "string"
+              },
+              "RIGHT_AZIMUTH": {
+                "type": "string"
+              },
+              "WIDTH": {
+                "type": "string"
+              },
+              "LEFT_WIDTH": {
+                "type": "string"
+              },
+              "RIGHT_WIDTH": {
+                "type": "string"
+              }
             }
           }
         },
