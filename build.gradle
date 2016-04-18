@@ -16,7 +16,10 @@ ext {
 
     description = "Common Map Geospatial Notation (CMGN)"
 
-    isRelease = project.hasProperty('release') ? true : false
+    nexusPublishUrl   = project.hasProperty('nexusPublishUrl') ? project.property('nexusPublishUrl') : ''
+
+    di2eNexusUsername = project.hasProperty('empUsername') ? project.property('empUsername') : ''
+    di2eNexusPassword = project.hasProperty('empPassword') ? project.property('empPassword') : ''
 }
 
 configure (rootProject) {
@@ -78,12 +81,25 @@ configure (rootProject) {
         }
         repositories {
             maven {
-                //url "$rootProject.buildDir/_repo"
-                url = project.hasProperty('repositoryUrl') ? project.property('repositoryUrl') : ''
+                //url "$rootProject.buildDir/_repo1"
+                url = nexusPublishUrl
 
                 credentials {
-                    username project.hasProperty('empUsername') ? project.property('empUsername') : ''
-                    password project.hasProperty('empPassword') ? project.property('empPassword') : ''
+                    username project.di2eNexusUsername
+                    password project.di2eNexusPassword
+                }
+            }
+        }
+        if (project.hasProperty('di2eNexusReleaseUrl')) {
+            repositories {
+                maven {
+                    //url "$rootProject.buildDir/_repo2"
+                    url = project.property('di2eNexusReleaseUrl')
+
+                    credentials {
+                        username project.di2eNexusUsername
+                        password project.di2eNexusPassword
+                    }
                 }
             }
         }
