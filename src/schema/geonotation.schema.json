@@ -164,28 +164,28 @@
     "IGeoBounds": {
       "type": "object",
       "properties": {
-        "minLongitude": {
+        "west": {
           "type": "number",
           "minimum": -180,
           "maximum": 180
         },
-        "maxLongitude": {
+        "east": {
           "type": "number",
           "minimum": -180,
           "maximum": 180
         },
-        "maxLatitude": {
+        "north": {
           "type": "number",
           "minimum": -90,
           "maximum": 90
         },
-        "minLatitude": {
+        "south": {
           "type": "number",
           "minimum": -90,
           "maximum": 90
         }
       },
-      "required": ["minLongitude", "maxLongitude", "maxLatitude", "minLatitude"]
+      "required": ["west", "east", "north", "south"]
     },
     "IGeoView": {
       "type": "object",
@@ -353,6 +353,12 @@
           "labelStyle": {
             "$ref": "#/definitions/IGeoLabelStyle"
           },
+          "strokeStyle": {
+            "$ref": "#/definitions/IGeoStrokeStyle"
+          },
+          "fillStyle": {
+            "$ref": "#/definitions/IGeoFillStyle"
+          },
           "extrude": {
             "type": "boolean",
             "default": false,
@@ -403,41 +409,14 @@
         "$ref": "#/definitions/IGeoRenderable"
       }]
     },
-    "IGeoPath": {
-      "allOf": [{
-        "$ref": "#/definitions/IGeoRenderable"
-      }, {
-        "properties": {
-          "strokeStyle": {
-            "$ref": "#/definitions/IGeoStrokeStyle"
-          }
-        },
-        "required": ["strokeStyle"]
-      }]
-    },
-    "IGeoSurface": {
-      "allOf": [{
-        "$ref": "#/definitions/IGeoRenderable"
-      }, {
-        "properties": {
-          "strokeStyle": {
-            "$ref": "#/definitions/IGeoStrokeStyle"
-          },
-          "fillStyle": {
-            "$ref": "#/definitions/IGeoFillStyle"
-          }
-        },
-        "required": ["strokeStyle", "fillStyle"]
-      }]
-    },
     "IGeoPolygon": {
       "allOf": [{
-        "$ref": "#/definitions/IGeoSurface"
+        "$ref": "#/definitions/IGeoRenderable"
       }]
     },
     "IGeoCircle": {
       "allOf": [{
-        "$ref": "#/definitions/IGeoSurface"
+        "$ref": "#/definitions/IGeoRenderable"
       }, {
         "properties": {
           "radius": {
@@ -451,7 +430,7 @@
     },
     "IGeoEllipse": {
       "allOf": [{
-        "$ref": "#/definitions/IGeoSurface"
+        "$ref": "#/definitions/IGeoRenderable"
       }, {
         "properties": {
           "semiMajor": {
@@ -470,7 +449,7 @@
     },
     "IGeoRectangle": {
       "allOf": [{
-        "$ref": "#/definitions/IGeoSurface"
+        "$ref": "#/definitions/IGeoRenderable"
       }, {
         "properties": {
           "width": {
@@ -489,7 +468,7 @@
     },
     "IGeoSquare": {
       "allOf": [{
-        "$ref": "#/definitions/IGeoSurface"
+        "$ref": "#/definitions/IGeoRenderable"
       }, {
         "properties": {
           "width": {
@@ -726,7 +705,7 @@
     },
     "IGeoAirControlMeasure": {
       "allOf": [{
-        "$ref": "#/definitions/IGeoSurface"
+        "$ref": "#/definitions/IGeoRenderable"
       }, {
         "properties": {
           "acmType": {
@@ -805,8 +784,6 @@
     "$ref": "#/definitions/IGeoRenderable"
   }, {
     "$ref": "#/definitions/IGeoPoint"
-  }, {
-    "$ref": "#/definitions/IGeoPath"
   }, {
     "$ref": "#/definitions/IGeoPolygon"
   }, {
