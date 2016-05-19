@@ -8,7 +8,8 @@ buildscript {
 }
 
 plugins {
-    id "com.moowork.node" version "0.11"
+    id "com.moowork.node"         version "0.11"
+    id 'net.researchgate.release' version '2.3.5'
 }
 
 ext {
@@ -103,6 +104,19 @@ configure (rootProject) {
                 }
             }
         }
+    }
+
+    release {
+        buildTasks = ['releaseBuild']
+        tagTemplate = 'v${version}'
+
+        git {
+            requireBranch = project.hasProperty('release_requireBranch') ? project.property('release_requireBranch') : 'FAIL'
+        }
+    }
+
+    task releaseBuild {
+        dependsOn allprojects.collect { it.tasks.withType(PublishToMavenRepository) }
     }
 }
 
