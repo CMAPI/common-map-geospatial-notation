@@ -210,12 +210,14 @@
       "properties": {
         "red": {
           "type": "number",
+          "format":"int",
           "minimum": 0,
           "maximum": 255,
           "default": 0
         },
         "green": {
           "type": "number",
+          "format":"int",
           "minimum": 0,
           "maximum": 255,
           "default": 0
@@ -223,6 +225,7 @@
         "blue": {
           "type": "number",
           "minimum": 0,
+          "format":"int",
           "maximum": 255,
           "default": 0
         },
