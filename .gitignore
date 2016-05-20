@@ -1,4 +1,4 @@
-
+src/generator/dist/
 # Gradle
 build/
 .gradle/

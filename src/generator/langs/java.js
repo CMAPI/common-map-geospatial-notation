@@ -46,6 +46,7 @@ module.exports = {
           }
           break;
         case "double":
+        case "int":
           if (schema.hasOwnProperty("default")) {
             defaultValue = " = " + schema.default;
           }
@@ -206,6 +207,15 @@ module.exports = {
     }
     return type;
   },
+  getNumberFormat: function(format){
+    var type = "double";
+    switch(format){
+      case "int":
+        type = "int";
+      break;
+    }
+    return type;
+  },
   getType: function(property, name, parentName) {
     // Default to string in case no type is available
     var type = "String";
@@ -214,7 +224,11 @@ module.exports = {
     } else if (property.hasOwnProperty("type")) {
       switch (property.type) {
         case "number":
+        if(property.hasOwnProperty("format")){
+          type = this.getNumberFormat(property.format);
+        } else {
           type = "double";
+        }
           break;
         case "string":
           type = this.checkStringFormat(property);
