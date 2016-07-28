@@ -4,15 +4,15 @@
     "IGeoAltitudeMode": {
       "properties": {
         "altitudeMode": {
-          "description": "Enumeration of altitude modes to define how the alititude value in an IGeoPosition alt (altitude) property will be interpreted",
-          "enum": ["CLAMP_TO_GROUND", "REALTIVE_TO_GROUND", "ABSOLUTE"],
+          "description": "Enumeration of altitude modes to define how the altitude value in an IGeoPosition alt (altitude) property will be interpreted",
+          "enum": ["CLAMP_TO_GROUND", "RELATIVE_TO_GROUND", "ABSOLUTE"],
           "default": "CLAMP_TO_GROUND"
         }
       }
     },
     "IGeoTimeSpan": {
       "type": "object",
-      "description": "Defines a range in time that represents a beginning and end.  This can be used to describe things such as avilability, visibilty, active/inactive for provided periods of time.  From a filtering point of view, if a time filter is applied a feature would only be visible on a map view within the dfined timespan(s)",
+      "description": "Defines a range in time that represents a beginning and end.  This can be used to describe things such as availability, visibility, active/inactive for provided periods of time.  From a filtering point of view, if a time filter is applied a feature would only be visible on a map view within the defined timespan(s)",
       "properties": {
         "begin": {
           "description": "Starting date time value as defined by http://tools.ietf.org/html/rfc3339",
@@ -68,7 +68,7 @@
             }
           },
           "timeStamp": {
-            "description": "Defines a point in time that something occured, was created, or was last updated time value as defined by http://tools.ietf.org/html/rfc3339",
+            "description": "Defines a point in time that something occurred, was created, or was last updated time value as defined by http://tools.ietf.org/html/rfc3339",
             "type": "string",
             "format": "date-time"
           },
@@ -206,9 +206,11 @@
       }
     },
     "IGeoColor": {
+      "description":"Object containing three color channels for red, green, and blue as well as an alpha channel for opacity",
       "type": "object",
       "properties": {
         "red": {
+          "description":"Value for red color channel. Integer ranging between 0 and 255",
           "type": "number",
           "format":"int",
           "minimum": 0,
@@ -216,6 +218,7 @@
           "default": 0
         },
         "green": {
+          "description":"Value for green color channel. Integer ranging between 0 and 255",
           "type": "number",
           "format":"int",
           "minimum": 0,
@@ -223,6 +226,7 @@
           "default": 0
         },
         "blue": {
+          "description":"Value for blue color channel. Integer ranging between 0 and 255",
           "type": "number",
           "minimum": 0,
           "format":"int",
@@ -230,6 +234,7 @@
           "default": 0
         },
         "alpha": {
+          "description":"Value for alpha channel to control opacity. Decimal ranging from 0 to 1",
           "type": "number",
           "minimum": 0,
           "maximum": 1,
@@ -239,9 +244,11 @@
       "required": ["red", "green", "blue", "alpha"]
     },
     "IGeoStrokeStyle": {
+      "description":"",
       "type": "object",
       "properties": {
         "strokeColor": {
+          "description":"Color of a path, or outline color of a feature such as a polygon or circle.  The fill and stroke can be set separtely to create a contract between the stroke and fill of any feature",
           "$ref": "#/definitions/IGeoColor"
         },
         "strokePattern": {
@@ -258,12 +265,16 @@
       "required": ["strokeColor", "strokePattern", "strokeWidth"]
     },
     "IGeoFillStyle": {
+      "description" : "Style porperties for the fill of a feature.  this can either be the interior of a shape such as a polygon or circle, or can also be applied to the fill of an a MIL-STD-2525 Icon to override the default affiliation color",
       "type": "object",
       "properties": {
+         "description":"The interior color of a feature such as a polygon or circle.  The fill and stroke can be set separtely to create a contract between the stroke and fill of any feature",
+         
         "fillColor": {
           "$ref": "#/definitions/IGeoColor"
         },
         "fillPattern": {
+          "description": "Fill patterns allow for alternatives to a solid fill color",
           "enum": ["solid", "hatched", "crossHatched"],
           "default": "solid"
         }
@@ -293,6 +304,7 @@
       "required": ["size", "offSetX", "offSetY"]
     },
     "IGeoLabelStyle": {
+      "description":"Style properties for the optiaonl text labels that may display next to feature data on a map",
       "type": "object",
       "properties": {
         "scale": {
@@ -308,18 +320,20 @@
     },
 
     "IGeoBase": {
+      "description":"This is the base object all containers and features are drived from",
       "type": "object",
       "properties": {
         "name": {
           "type": "string",
-          "description": "Name is used to display text labels alonside to a feature and can be used in user interfaces that manage the data on the map",
+          "description": "Name is used to display text labels alongside to a feature and can be used in user interfaces that manage the data on the map",
           "default": ""
         },
         "geoId": {
           "description": "The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element",
           "type": "string",
           "langType": {
-            "java": "java.util.UUID"
+            "java": "java.util.UUID",
+            "js": "cmapi.randomUUID"
           }
         },
         "description": {
@@ -330,6 +344,7 @@
       "required": ["name", "id", "description", "readOnly"]
     },
     "IGeoContainer": {
+      "description":"Geo containers are derived from ",
       "type": "object",
       "allOf": [{
         "$ref": "#/definitions/IGeoBase"
@@ -365,9 +380,9 @@
           "extrude": {
             "type": "boolean",
             "default": false,
-            "description": "A curtain is formed below each point or line segemnt and extends to the ground"
+            "description": "A curtain is formed below each point or line segment and extends to the ground"
           },
-          "tessalate": {
+          "tessellate": {
             "type": "boolean",
             "default": true,
             "description": "Value determines if the item will follow the terrain and drape, or follow a straight plane cutting through terrain above the altitude of the line segment.  This property is ignored for single position items."
@@ -417,7 +432,13 @@
         "$ref": "#/definitions/IGeoRenderable"
       }]
     },
+    "IGeoPath": {
+      "allOf": [{
+        "$ref": "#/definitions/IGeoRenderable"
+      }]
+    },
     "IGeoCircle": {
+      "description": "A circular based forma single geospatial location as the center with a radius in meters",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
@@ -707,12 +728,13 @@
       }]
     },
     "IGeoAirControlMeasure": {
+      "description":"Air control meacusures (ACM) represent a three dimensional volume in the air above earth used to indicate where aircarfat should stay within, or stay out of",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
         "properties": {
           "acmType": {
-            "description": "Symbol code as defined by MIL-STD-2525",
+            "description": "Type of air control measure to create",
             "enum": ["ROUTE", "CYLINDER", "ORBIT", "POLYGON", "RADARC", "POLYARC", "TRACK", "CURTAIN"]
           },
           "attributes": {
@@ -758,11 +780,11 @@
             }
           }
         },
-        "required": ["acmType", "acmAttributes"]
+        "required": ["acmType", "attributes"]
       }]
     },
     "IGeoDocument": {
-      "description": "",
+      "description": "File containing geospatil feature data in a known format such as KML or GeoJSON",
       "allOf": [{
         "$ref": "#/definitions/IGeoBase"
       }, {
