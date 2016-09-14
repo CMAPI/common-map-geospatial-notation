@@ -5,8 +5,7 @@
       "properties": {
         "altitudeMode": {
           "description": "Enumeration of altitude modes to define how the altitude value in an IGeoPosition alt (altitude) property will be interpreted",
-          "enum": ["CLAMP_TO_GROUND", "RELATIVE_TO_GROUND", "ABSOLUTE"],
-          "default": "CLAMP_TO_GROUND"
+          "enum": ["CLAMP_TO_GROUND", "RELATIVE_TO_GROUND", "ABSOLUTE"]
         }
       }
     },
@@ -304,7 +303,7 @@
       "required": ["size", "offSetX", "offSetY"]
     },
     "IGeoLabelStyle": {
-      "description":"Style properties for the optiaonl text labels that may display next to feature data on a map",
+      "description":"Style properties for the optional text labels that may display next to feature data on a map",
       "type": "object",
       "properties": {
         "scale": {
@@ -314,13 +313,18 @@
         },
         "color": {
           "$ref": "#/definitions/IGeoColor"
+        },
+        "justification": {
+          "description": "Position to align text in relation to the associated geospatial coordinate",
+          "enum": ["LEFT", "CENTER", "RIGHT"],
+          "default": "LEFT"
         }
       },
       "required": ["scale"]
     },
 
     "IGeoBase": {
-      "description":"This is the base object all containers and features are drived from",
+      "description":"This is the base object all containers and features are derived from",
       "type": "object",
       "properties": {
         "name": {
@@ -331,20 +335,34 @@
         "geoId": {
           "description": "The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element",
           "type": "string",
+          "readOnly": true,
           "langType": {
             "java": "java.util.UUID",
             "js": "cmapi.randomUUID"
           }
         },
+        "dataProviderId": {
+          "description": "This is a free form string that can represent an ID specific to this piece of data as it is tracked uniquely by the system providing this data.  This is different from GeoId as the GeoId is of type UUID.  Some systems may use IDs formatted in a way that it cannot be stored in a UUID.  In this case, this property can be used by the system to track this psece of data by the ID they use internally.  The GeoID proerty will be used by CMAPI as the unique ID and this ID is for the benefit of the system providing the data.",
+          "type": "string"
+        },
         "description": {
           "type": "string",
+          "description" : "A simple string, or HTML formatted string that can be displayed to describe the IGeoBase.  In the case of a feature the description property can be used to store the content that should display in a pop up window after clicking on a feature.",
           "default": ""
+        },
+       "properties": {
+          "type": "object",
+          "readOnly": true,
+          "description": "A key value pair where both the key and value where the key is a unique string and the value is an object that can be stored as and read from a string.  In cases where an IGeoBase will be serialized all of the values will be serialized using the objects toString() method.  It is the resposibility of the applications accessing values stored in the properties hash map to determine if the value is in a string format and convert back to whatever object type the string was derived from.  The object should not contain any references to other objects where that relationship is expected to exist beyond copying a current value of a simple type as the relationship will not be properly restored when deserialization occurs.  CMAPI will not use the properties hash for any internal purpose, it will simply allow 3rd party data to pass additional attributes that will stay associated with the CMAPI object as it moves between applications and systems.",
+          "langType": {
+            "java": "java.util.HashMap<String, Object>"
+          }
         }
       },
       "required": ["name", "id", "description", "readOnly"]
     },
     "IGeoContainer": {
-      "description":"Geo containers are derived from ",
+      "description":"Geo containers are designed to be a base interface for anything that can contain a children list of IGeoBase objects.  This facilitates the concept of Containers such as overlays, as well as features such as a point that can contain child features.",
       "type": "object",
       "allOf": [{
         "$ref": "#/definitions/IGeoBase"
@@ -352,9 +370,16 @@
         "properties": {
           "children": {
             "type": "array",
+            "readOnly": true,
+            "description": "A list of objects that Implment the IGeoBase Interface",
             "items": {
               "$ref": "#/definitions/IGeoBase"
             }
+          },
+          "readOnly": {
+            "type": "boolean",
+            "description": "Indicates if the object is intended to be read only (true) or allow changes to the values ot its properties (false)",
+            "default": false
           }
         },
         "required": ["children"]
@@ -397,10 +422,6 @@
             "minimum": 0,
             "maximum": 359,
             "default": 0
-          },
-          "readOnly": {
-            "type": "boolean",
-            "default": false
           }
         },
         "required": ["labelStyle"]
