@@ -2,6 +2,9 @@ var fs = require('fs');
 var debug = false;
 var filePath = "/../schema/geonotation.schema.json";
 
+
+
+
 if (process.argv[2] === "-debug") {
   debug = true;
 }
@@ -29,17 +32,36 @@ function loadJSONfile(filename, encoding) {
   }
 } // loadJSONfile
 
+function deleteFolderRecursive(path) {
+  if( fs.existsSync(path) ) {
+    fs.readdirSync(path).forEach(function(file,index){
+      var curPath = path + "/" + file;
+      if(fs.lstatSync(curPath).isDirectory()) { // recurse
+        deleteFolderRecursive(curPath);
+      } else { // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
+}// deleteFolderRecursive
 
+// attempt to clear
+try{
+  deleteFolderRecursive("./dist");
+}catch(e){
+  console.log(e);
+}
 // set the content of the loaded schmea into the myData object
 var schema = loadJSONfile(__dirname + filePath),
   // Include the Java lang generator
   langJava = require("./langs/java.js"),
+    langJs = require("./langs/javascript.js"),
   //langD3 = require("./langs/d3.js"),
   namspace = "org.cmapi.primitives",
-  // Include the c# lang generator
-  //langCSharp = require("./langs/cs.js"),
+
   // Add the target langs that will be used by generator
-  langs = [langJava], //, langCSharp],
+  langs = [langJava,langJs],
   i,
   len,
   langDef;

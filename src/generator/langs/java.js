@@ -1,6 +1,7 @@
 module.exports = {
   // Include so we can write files to disk.  fs is a native node js package
   fs: require('fs'),
+  spawn: require('child_process').spawn,
   debug: false,
   namespace: "",
   parseProperty: function(prop, schema, parentName) {
@@ -25,7 +26,10 @@ module.exports = {
       properties.push(this.getDocDescription(propVal.description));
       properties.push('   */');
       //properties.push('  @org.codehaus.jackson.annotate.JsonProperty("' + prop + '")');
-      properties.push("    public void set" + uProp + "(" + type + " " + prop + ");\n");
+      // If proeprty is set to read only in schema, do not included setter in POJO or Interface
+      if(!(propVal.hasOwnProperty("readOnly") && propVal.readOnly === true)){
+        properties.push("    public void set" + uProp + "(" + type + " " + prop + ");\n");
+      }
       //properties.push('  @org.codehaus.jackson.annotate.JsonProperty("' + prop + '")');
       properties.push("    public " + type + " get" + uProp + "();\n");
 
@@ -40,10 +44,10 @@ module.exports = {
         case "string":
           if (schema.hasOwnProperty("default")) {
             defaultValue = " = \"" + schema.default+"\"";
-          } else {
+          } /*else {
 
             defaultValue = " = \"\"";
-          }
+          }*/
           break;
         case "double":
         case "int":
@@ -96,16 +100,18 @@ module.exports = {
       privates.push("    private " + type + " " + prop + this.getDefaultValue(propVal, type) + ";");
       // Make first character of property name uppercase for get / set camel casing
       uProp = this.makeFirstUpperCase(prop);
+
+      // Do not include setter if property is set to ReadOnly in schema
+      if(!(propVal.hasOwnProperty("readOnly") && propVal.readOnly === true)){
+        properties.push('\n  /**');
+        properties.push(this.getDocParams(prop, propVal.description));
+        properties.push('   */');
+        properties.push("    public void set" + uProp + "(" + type + " " + prop + "){");
+        properties.push("      this." + prop + " = " + prop + ";");
+        properties.push("    }\n");
+        
+      }
       properties.push('\n  /**');
-      //properties.push(this.getDocDescription(propVal.description));
-      properties.push(this.getDocParams(prop, propVal.description));
-      properties.push('   */');
-      //properties.push('  @org.codehaus.jackson.annotate.JsonProperty("' + prop + '")');
-      properties.push("    public void set" + uProp + "(" + type + " " + prop + "){");
-      properties.push("      this." + prop + " = " + prop + ";");
-      properties.push("    }\n");
-      properties.push('\n  /**');
-      //properties.push(this.getDocDescription(propVal.description));
       properties.push(this.getDocReturns(prop, propVal.description));
       properties.push('   */');
       //properties.push('  @org.codehaus.jackson.annotate.JsonProperty("' + prop + '")');
@@ -548,5 +554,20 @@ module.exports = {
       this.createApiInterface(definitions, key, definitions[key]);
       this.createApiPOJO(definitions, key, definitions[key]);
     }
+/*
+    var javac = spawn('javac', ['dist/java/org/cmapi/primitives/*.java']);
+javac.on('close', function(code) {
+    if (code === 0) {
+        var jar = spawn('jar', ['cf', 'org-cmapi-primitives.jar', 'dist/java/org/cmapi/primitives/*.class']);
+        jar.on('close', function(code2) {
+            console.log(code2 + " <- this is the code!");
+            var javadoc = spawn('javadoc', ['-d', 'dist/java/org/cmapi/primitives/docs', '-sourcepath', 'dist/java/org/cmapi/primitives/','org.cmapi.primitives']);
+            javadoc.on('close', function(code3) {
+                console.log(code3 + " <- this is the 3rd code!");
+            });
+        });
+    }
+});
+*/
   }
 };
