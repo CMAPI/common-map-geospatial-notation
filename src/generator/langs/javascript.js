@@ -125,32 +125,32 @@ module.exports = {
 
     },
     getDocDescription: function(description) {
-        var lineMax = 65,
-            curLength = 0,
-            desc = [],
-            words,
-            i,
-            curLine = "";
+    var lineMax = 65,
+      curLength = 0,
+      desc = [],
+      words,
+      i,
+      curLine = "";
 
         if (description) {
 
-            words = description.split(" ")
-            for (i = 0; i < words.length; i++) {
-                if (curLine.length < lineMax) {
-                    curLine += " " + words[i];
-                } else if (curLine.length > lineMax || i === words.length) {
+          words = description.split(" ")
+          for (i = 0; i < words.length; i++) {
+            if (curLine.length < lineMax && i < words.length-1) {
+              curLine += " " + words[i];
+            } else if (curLine.length >= lineMax || i === words.length-1) {
 
-                    curLine += " " + words[i];
-                    desc.push("   * " + curLine);
-                    curLine = "";
-
-                }
+              curLine += " " + words[i];
+              desc.push("   * " + curLine);
+              curLine = "";
 
             }
+
+          }
         }
 
         return desc.join("\n");
-    },
+      },
     getDocParams: function(param, description) {
 
         return "   * @param " + param + "        " + (description ? description : "");

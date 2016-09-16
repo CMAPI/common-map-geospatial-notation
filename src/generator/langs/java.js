@@ -25,6 +25,8 @@ module.exports = {
       properties.push('\n  /**');
       properties.push(this.getDocDescription(propVal.description));
       properties.push('   */');
+
+
       //properties.push('  @org.codehaus.jackson.annotate.JsonProperty("' + prop + '")');
       // If proeprty is set to read only in schema, do not included setter in POJO or Interface
       if(!(propVal.hasOwnProperty("readOnly") && propVal.readOnly === true)){
@@ -44,17 +46,10 @@ module.exports = {
         case "string":
           if (schema.hasOwnProperty("default")) {
             defaultValue = " = \"" + schema.default+"\"";
-          } /*else {
-
-            defaultValue = " = \"\"";
-          }*/
+          }
           break;
         case "double":
         case "int":
-          if (schema.hasOwnProperty("default")) {
-            defaultValue = " = " + schema.default;
-          }
-          break;
         case "boolean":
           if (schema.hasOwnProperty("default")) {
             defaultValue = " = " + schema.default;
@@ -66,7 +61,6 @@ module.exports = {
           } else if (type.indexOf("java.util.UUID") != -1) {
             defaultValue = " = " + type.replace("java.util.UUID", "java.util.UUID.randomUUID()");
           } else if (type.indexOf("java.") === -1 && type.indexOf(".") === -1) {
-
             defaultValue = " = new " + this.interfaceToClassName(type) + "()";
           } else if (schema.hasOwnProperty("enum") && schema.hasOwnProperty("default")) {
             defaultValue = " = " + type + "." + schema.default;
@@ -91,13 +85,19 @@ module.exports = {
       uProp,
       type,
       propVal,
+      access = "private",
       desc;
 
     if (schema.properties.hasOwnProperty(prop)) {
       propVal = schema.properties[prop];
       type = this.getType(propVal, prop, name);
 
-      privates.push("    private " + type + " " + prop + this.getDefaultValue(propVal, type) + ";");
+          // Check to see if the access modifier is set to something.  This defaults to public otherwise
+      if(propVal.hasOwnProperty("access") && propVal.access.hasOwnProperty("java")){
+        access = propVal.access.java;
+      }
+
+      privates.push("    "+access+" " + type + " " + prop + this.getDefaultValue(propVal, type) + ";");
       // Make first character of property name uppercase for get / set camel casing
       uProp = this.makeFirstUpperCase(prop);
 
@@ -162,9 +162,9 @@ module.exports = {
 
       words = description.split(" ")
       for (i = 0; i < words.length; i++) {
-        if (curLine.length < lineMax) {
+        if (curLine.length < lineMax && i < words.length-1) {
           curLine += " " + words[i];
-        } else if (curLine.length > lineMax || i === words.length) {
+        } else if (curLine.length >= lineMax || i === words.length-1) {
 
           curLine += " " + words[i];
           desc.push("   * " + curLine);

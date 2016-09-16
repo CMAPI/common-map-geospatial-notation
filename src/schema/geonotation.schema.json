@@ -336,6 +336,9 @@
           "description": "The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element",
           "type": "string",
           "readOnly": true,
+          "access": {
+            "java" : "protected"
+          },
           "langType": {
             "java": "java.util.UUID",
             "js": "cmapi.randomUUID"
@@ -359,7 +362,7 @@
           }
         }
       },
-      "required": ["name", "id", "description", "readOnly"]
+      "required": ["name", "geoId", "description"]
     },
     "IGeoContainer": {
       "description":"Geo containers are designed to be a base interface for anything that can contain a children list of IGeoBase objects.  This facilitates the concept of Containers such as overlays, as well as features such as a point that can contain child features.",
