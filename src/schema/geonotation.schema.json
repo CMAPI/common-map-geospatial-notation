@@ -333,12 +333,8 @@
           "default": ""
         },
         "geoId": {
-          "description": "The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element",
+          "description": "The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element.  Once this ID is set, it should not be changed to avoid refernces by ID to break.  The setter is provided so that an item can be deserialized from an object with an exisitng ID or provided an exisiting ID immediately after instantiation.",
           "type": "string",
-          "readOnly": true,
-          "access": {
-            "java" : "protected"
-          },
           "langType": {
             "java": "java.util.UUID",
             "js": "cmapi.randomUUID"
