@@ -250,9 +250,22 @@
           "description":"Color of a path, or outline color of a feature such as a polygon or circle.  The fill and stroke can be set separtely to create a contract between the stroke and fill of any feature",
           "$ref": "#/definitions/IGeoColor"
         },
-        "strokePattern": {
-          "enum": ["solid", "dashed", "dotted"],
-          "default": "solid"
+        "stipplingPattern": {
+          "type": "number",
+          "langType": {
+            "java": "short"
+          },
+          "description": "specifies a number whose lower 16 bits define a pattern of which pixels in the image are white and which are transparent. Each bit corresponds to a pixel, and the pattern repeats after every n*16 pixels, where n is the factor. For example, if the factor is 3, each bit in the pattern is repeated three times before using the next bit",
+          "default": 0
+        },
+        "stipplingFactor": {
+          "type": "number",
+          "format": "int",
+          "langType": {
+            "java": "int"
+          },
+          "description": "specifies the number of times each bit in the pattern is repeated before the next bit is used. For example, if the factor is 3, each bit is repeated three times before using the next bit. The specified factor must be either 0 or an integer greater than 0. A factor of 0 indicates no stippling",
+          "default": 0
         },
         "strokeWidth": {
           "type": "number",
@@ -306,18 +319,31 @@
       "description":"Style properties for the optional text labels that may display next to feature data on a map",
       "type": "object",
       "properties": {
-        "scale": {
-          "description": "Multiplier for the size of text displayed as the label",
+        "size": {
+          "description": "Size of the font in pixels asumming 96 ppi. If the system rendering the text is running at a screen resolution other than 96 ppi, a translation should be done to make the text larger of smaller to represent the same amount of physical space as if the screen were at 96 ppi.  For example if the screen resolution of the target device rednering the text is 126 ppi, you would use the following formula to get a proper pixel value: ( devicePixelsPerInch / 96 ) x IGeoLabelStyle.size = ActucalPixelSize or ( 126 / 96 ) * 12 = 16",
           "type": "number",
-          "default": 1
+          "default": 12
         },
         "color": {
+          "description":"The fill color for the text",
+          "$ref": "#/definitions/IGeoColor"
+        },
+        "outlineColor": {
+          "description":"The outline color for the text",
           "$ref": "#/definitions/IGeoColor"
         },
         "justification": {
           "description": "Position to align text in relation to the associated geospatial coordinate",
           "enum": ["LEFT", "CENTER", "RIGHT"],
           "default": "LEFT"
+        },
+        "fontFamily": {
+          "description": "Name of the font family to be used.  In the case that the system rendering this text does not have the font family, it shall use a defalt font and still display the text",
+          "type": "string"
+        },
+        "typeface" : {
+          "enum": ["REGULAR", "BOLD", "ITALIC", "BOLDITALIC"],
+          "default": "REGULAR"
         }
       },
       "required": ["scale"]
