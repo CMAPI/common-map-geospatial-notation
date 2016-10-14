@@ -252,9 +252,7 @@
         },
         "stipplingPattern": {
           "type": "number",
-          "langType": {
-            "java": "short"
-          },
+          "format":"short",
           "description": "specifies a number whose lower 16 bits define a pattern of which pixels in the image are white and which are transparent. Each bit corresponds to a pixel, and the pattern repeats after every n*16 pixels, where n is the factor. For example, if the factor is 3, each bit in the pattern is repeated three times before using the next bit",
           "default": 0
         },
