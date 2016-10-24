@@ -50,6 +50,8 @@ module.exports = {
           break;
         case "double":
         case "int":
+        case "short":
+        case "float":
         case "boolean":
           if (schema.hasOwnProperty("default")) {
             defaultValue = " = " + schema.default;
@@ -67,7 +69,6 @@ module.exports = {
           } else if (schema.hasOwnProperty("langType") && schema.langType.hasOwnProperty("java")) {
             defaultValue = " = new " + schema.langType.java + "()";
           }
-
           break;
       }
 
@@ -218,6 +219,9 @@ module.exports = {
     switch(format){
       case "int":
         type = "int";
+      break;
+      case "short":
+        type = "short";
       break;
     }
     return type;
