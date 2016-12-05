@@ -249,13 +249,13 @@ module.exports = {
                  name = "POLYARC--------";
                  break;
                  case "TRACK":
-                 name = "TRACK---------";
+                 name = "TRACK----------";
                  break;
                  case "CURTAIN":
                  name = "CURTAIN--------";
                  break;
                  case "ORBIT":
-                 name = "ORBIT---------";
+                 name = "ORBIT----------";
                  break;
             }
         }
