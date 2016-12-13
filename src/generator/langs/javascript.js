@@ -224,13 +224,52 @@ module.exports = {
         }
         return type;
     },
+    checkSpecialCase: function(name){
+        if(typeof name === "string"){
+            switch(name){
+                case "MIL_STD_2525B":
+                 name = "2525b";
+                 break;
+                case "MIL_STD_2525C":
+                 name = "2525c";
+                 break;
+                case "ROUTE":
+                 name = "ROUTE----------";
+                 break;
+                 case "CYLINDER":
+                 name = "CYLINDER-------";
+                 break;
+                 case "POLYGON":
+                 name = "POLYGON--------";
+                 break;
+                 case "RADARC":
+                 name = "RADARC---------";
+                 break;
+                 case "POLYARC":
+                 name = "POLYARC--------";
+                 break;
+                 case "TRACK":
+                 name = "TRACK----------";
+                 break;
+                 case "CURTAIN":
+                 name = "CURTAIN--------";
+                 break;
+                 case "ORBIT":
+                 name = "ORBIT----------";
+                 break;
+            }
+        }
+        return name;
+    },
     createEnum: function(name, list, className) {
         var enums = [],
+            enumValue,
+            that = this,
             len = list.length,
             i;
         for (i = 0; i < len; i++) {
-
-            enums.push("    " + list[i] + " : \"" + list[i] + "\"");
+            enumValue = that.checkSpecialCase(list[i]);
+            enums.push("    " + list[i] + " : \"" + enumValue + "\"");
         }
         return enums.join(",\n");
     },
