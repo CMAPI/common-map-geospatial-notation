@@ -47,6 +47,10 @@ configure (rootProject) {
         classifier 'javadoc'
         from javadoc.destinationDir
     }
+    task sourceJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
 
     task generateJavaBindingsCMAPI(type: NodeTask, description: "Generates the CMAPI interface classes") {
         script = file("src/generator/generate.js")
@@ -77,6 +81,7 @@ configure (rootProject) {
 
                 artifact jar
                 artifact javadocJar
+                artifact sourceJar
                 artifact cmapiJsonSchemaFile
             }
         }
