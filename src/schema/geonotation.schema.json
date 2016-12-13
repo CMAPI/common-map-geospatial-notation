@@ -4,8 +4,8 @@
     "IGeoAltitudeMode": {
       "properties": {
         "altitudeMode": {
-          "description": "Enumeration of altitude modes to define how the altitude value in an IGeoPosition alt (altitude) property will be interpreted",
-          "enum": ["CLAMP_TO_GROUND", "RELATIVE_TO_GROUND", "ABSOLUTE"]
+          "enum": ["CLAMP_TO_GROUND", "RELATIVE_TO_GROUND", "ABSOLUTE"],
+          "description" : "Enumeration of altitude modes to define how the altitude value in an IGeoPosition alt (altitude) property will be interpreted"
         }
       }
     },
@@ -14,25 +14,25 @@
       "description": "Defines a range in time that represents a beginning and end.  This can be used to describe things such as availability, visibility, active/inactive for provided periods of time.  From a filtering point of view, if a time filter is applied a feature would only be visible on a map view within the defined timespan(s)",
       "properties": {
         "begin": {
-          "description": "Starting date time value as defined by http://tools.ietf.org/html/rfc3339",
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "description": "Starting date time value as defined by http://tools.ietf.org/html/rfc3339"
         },
         "end": {
-          "description": "Ending date time value as defined by http://tools.ietf.org/html/rfc3339",
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "description": "Ending date time value as defined by http://tools.ietf.org/html/rfc3339"
         }
       },
       "required": ["begin", "end"]
     },
     "IGeoPosition": {
       "type": "object",
-      "description": "Defines a specific geospatial position derived using WGS-84 latitude longitude",
+      "description": "Defines a specific geospatial position derived using WGS-84 latitude longitude and alitude in meters",
       "properties": {
         "latitude": {
-          "description": "Latitude value in degrees decimal (i.e. 23.4567) derived from WGS-84",
           "type": "number",
+          "description": "Latitude value in degrees decimal (i.e. 23.4567) derived from WGS-84",
           "minimum": -90,
           "maximum": 90,
           "default": 0
@@ -60,16 +60,16 @@
       }, {
         "properties": {
           "positions": {
-            "description": "An ordered list of IGeoPosition objects representing a 1 or more positions with an associated IGeoAltitudeMode to interpret the altitude values.  In the case of a point, a single position will create a single icon, wheras mulitple positions will create the same icon at multiple positions to be interpreted as a composite feature. For consistency, and IGeoRenderables use an IGeoPositionGroup even when only containing a single positions",
             "type": "array",
+            "description": "An ordered list of IGeoPosition objects representing a 1 or more positions with an associated IGeoAltitudeMode to interpret the altitude values.  In the case of a point, a single position will create a single icon, wheras mulitple positions will create the same icon at multiple positions to be interpreted as a composite feature. For consistency, and IGeoRenderables use an IGeoPositionGroup even when only containing a single positions",
             "items": {
               "$ref": "#/definitions/IGeoPosition"
             }
           },
           "timeStamp": {
-            "description": "Defines a point in time that something occurred, was created, or was last updated time value as defined by http://tools.ietf.org/html/rfc3339",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Defines a point in time that something occurred, was created, or was last updated time value as defined by http://tools.ietf.org/html/rfc3339"
           },
           "timeSpans": {
             "type": "array",
@@ -112,17 +112,17 @@
           },
           "roll": {
             "type": "number",
+            "description": "Rotation, in degrees, of the camera around the Z axis. Values range from −180 to +180 degrees",
             "minimum": 0,
             "maximum": 179,
-            "default": 0,
-            "description": "Rotation, in degrees, of the camera around the Z axis. Values range from −180 to +180 degrees"
+            "default": 0
           },
           "heading": {
             "type": "number",
+            "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). Values range from 0 to 360 degrees",
             "minimum": 0,
             "maximum": 359,
-            "default": 0,
-            "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). Values range from 0 to 360 degrees"
+            "default": 0
           }
         }
       }],
@@ -146,15 +146,15 @@
           },
           "heading": {
             "type": "number",
+            "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). Values range from 0 to 360 degrees",
             "minimum": 0,
             "maximum": 359.99,
-            "default": 0,
-            "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). Values range from 0 to 360 degrees"
+            "default": 0
           },
           "range": {
             "type": "number",
-            "default": 1000000,
-            "description": "Distance in meters from the point specified by IGeoPosition to the LookAt position"
+            "description": "Distance in meters from the point specified by IGeoPosition to the LookAt position",
+            "default": 1000000
           }
         }
       }],
@@ -162,24 +162,29 @@
     },
     "IGeoBounds": {
       "type": "object",
+      "description": "A rectangular box representing a geospatial area",
       "properties": {
         "west": {
           "type": "number",
+          "description": "The western most longitude of the rectangle",
           "minimum": -180,
           "maximum": 180
         },
         "east": {
           "type": "number",
+          "description": "The eastern most longitude of the rectangle",
           "minimum": -180,
           "maximum": 180
         },
         "north": {
           "type": "number",
+          "description": "The nothern most latitude of the rectangle",
           "minimum": -90,
           "maximum": 90
         },
         "south": {
           "type": "number",
+          "description": "The southern most latitude of the rectangle",
           "minimum": -90,
           "maximum": 90
         }
@@ -188,6 +193,7 @@
     },
     "IGeoView": {
       "type": "object",
+      "description": "List of objects that describe the overall view of a map",
       "properties": {
         "camera": {
           "$ref": "#/definitions/IGeoCamera"
@@ -205,36 +211,36 @@
       }
     },
     "IGeoColor": {
-      "description":"Object containing three color channels for red, green, and blue as well as an alpha channel for opacity",
       "type": "object",
+      "description":"Object containing three color channels for red, green, and blue as well as an alpha channel for opacity",
       "properties": {
         "red": {
-          "description":"Value for red color channel. Integer ranging between 0 and 255",
           "type": "number",
           "format":"int",
+          "description":"Value for red color channel. Integer ranging between 0 and 255",
           "minimum": 0,
           "maximum": 255,
           "default": 0
         },
         "green": {
-          "description":"Value for green color channel. Integer ranging between 0 and 255",
           "type": "number",
           "format":"int",
+          "description":"Value for green color channel. Integer ranging between 0 and 255",
           "minimum": 0,
           "maximum": 255,
           "default": 0
         },
         "blue": {
-          "description":"Value for blue color channel. Integer ranging between 0 and 255",
           "type": "number",
-          "minimum": 0,
           "format":"int",
+          "description":"Value for blue color channel. Integer ranging between 0 and 255",
+          "minimum": 0,
           "maximum": 255,
           "default": 0
         },
         "alpha": {
-          "description":"Value for alpha channel to control opacity. Decimal ranging from 0 to 1",
           "type": "number",
+          "description":"Value for alpha channel to control opacity. Decimal ranging from 0 to 1",
           "minimum": 0,
           "maximum": 1,
           "default": 0.8
@@ -243,11 +249,10 @@
       "required": ["red", "green", "blue", "alpha"]
     },
     "IGeoStrokeStyle": {
-      "description":"",
       "type": "object",
+      "description":"Style attributes for strokes",
       "properties": {
         "strokeColor": {
-          "description":"Color of a path, or outline color of a feature such as a polygon or circle.  The fill and stroke can be set separtely to create a contract between the stroke and fill of any feature",
           "$ref": "#/definitions/IGeoColor"
         },
         "stipplingPattern": {
@@ -259,10 +264,10 @@
         "stipplingFactor": {
           "type": "number",
           "format": "int",
+          "description": "specifies the number of times each bit in the pattern is repeated before the next bit is used. For example, if the factor is 3, each bit is repeated three times before using the next bit. The specified factor must be either 0 or an integer greater than 0. A factor of 0 indicates no stippling",
           "langType": {
             "java": "int"
           },
-          "description": "specifies the number of times each bit in the pattern is repeated before the next bit is used. For example, if the factor is 3, each bit is repeated three times before using the next bit. The specified factor must be either 0 or an integer greater than 0. A factor of 0 indicates no stippling",
           "default": 0
         },
         "strokeWidth": {
@@ -270,16 +275,14 @@
           "description": "Width of the stroke on the screen in pixels",
           "default": 3
         }
-
       },
       "required": ["strokeColor", "strokePattern", "strokeWidth"]
     },
     "IGeoFillStyle": {
-      "description" : "Style porperties for the fill of a feature.  this can either be the interior of a shape such as a polygon or circle, or can also be applied to the fill of an a MIL-STD-2525 Icon to override the default affiliation color",
       "type": "object",
+      "description" : "Style properties for the fill of a feature.  This can either be the interior of a shape such as a polygon or circle, or can also be applied to the fill of an a MIL-STD-2525 Icon to override the default affiliation color",
       "properties": {
-         "description":"The interior color of a feature such as a polygon or circle.  The fill and stroke can be set separtely to create a contract between the stroke and fill of any feature",
-         
+        "description":"The interior color of a feature such as a polygon or circle.  The fill and stroke can be set separtely to create a contract between the stroke and fill of any feature",
         "fillColor": {
           "$ref": "#/definitions/IGeoColor"
         },
@@ -293,41 +296,40 @@
     },
     "IGeoIconStyle": {
       "type": "object",
+      "description": "Style attributes associated with icons",
       "properties": {
         "size": {
-          "description": "Size in pixels.  If the icon is not square, the size will represent the larger value of the rectangle",
           "type": "number",
+          "description": "Size in pixels at 96 ppi.  If the system rendering the text is running at a screen resolution other than 96 ppi, a translation should be done to make the icon larger of smaller to represent the same amount of physical space as if the screen were at 96 ppi. If the icon is not square, the size will represent the larger value of the rectangle",
           "minimum": 1,
           "default": 32
         },
         "offSetX": {
-          "description": "X Offest of icon in pixels derived from the lower left point of the icon",
           "type": "number",
+          "description": "X Offest of icon in pixels derived from the lower left point of the icon",
           "default": 0
         },
         "offSetY": {
-          "description": "X Offest of icon in pixels derived from the lower left point of the icon",
           "type": "number",
+          "description": "X Offest of icon in pixels derived from the lower left point of the icon",
           "default": 0
         }
       },
       "required": ["size", "offSetX", "offSetY"]
     },
     "IGeoLabelStyle": {
-      "description":"Style properties for the optional text labels that may display next to feature data on a map",
       "type": "object",
+      "description":"Style properties for the optional text labels that may display next to feature data on a map",
       "properties": {
         "size": {
-          "description": "Size of the font in pixels asumming 96 ppi. If the system rendering the text is running at a screen resolution other than 96 ppi, a translation should be done to make the text larger of smaller to represent the same amount of physical space as if the screen were at 96 ppi.  For example if the screen resolution of the target device rednering the text is 126 ppi, you would use the following formula to get a proper pixel value: ( devicePixelsPerInch / 96 ) x IGeoLabelStyle.size = ActucalPixelSize or ( 126 / 96 ) * 12 = 16",
           "type": "number",
+          "description": "Size of the font in pixels asumming 96 ppi. If the system rendering the text is running at a screen resolution other than 96 ppi, a translation should be done to make the text larger of smaller to represent the same amount of physical space as if the screen were at 96 ppi.  For example if the screen resolution of the target device rednering the text is 126 ppi, you would use the following formula to get a proper pixel value: ( devicePixelsPerInch / 96 ) x IGeoLabelStyle.size = ActucalPixelSize or ( 126 / 96 ) * 12 = 16",
           "default": 12
         },
         "color": {
-          "description":"The fill color for the text",
           "$ref": "#/definitions/IGeoColor"
         },
         "outlineColor": {
-          "description":"The outline color for the text",
           "$ref": "#/definitions/IGeoColor"
         },
         "justification": {
@@ -336,20 +338,20 @@
           "default": "LEFT"
         },
         "fontFamily": {
-          "description": "Name of the font family to be used.  In the case that the system rendering this text does not have the font family, it shall use a defalt font and still display the text",
-          "type": "string"
+          "type": "string",
+          "description": "Name of the font family to be used.  In the case that the system rendering this text does not have the font family, it shall use a defalt font and still display the text"
         },
         "typeface" : {
+          "description" : "Typeface design to be used for the font",
           "enum": ["REGULAR", "BOLD", "ITALIC", "BOLDITALIC"],
           "default": "REGULAR"
         }
       },
       "required": ["scale"]
     },
-
     "IGeoBase": {
-      "description":"This is the base object all containers and features are derived from",
       "type": "object",
+      "description":"This is the base object all containers and features are derived from",
       "properties": {
         "name": {
           "type": "string",
@@ -357,44 +359,44 @@
           "default": ""
         },
         "geoId": {
-          "description": "The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element.  Once this ID is set, it should not be changed to avoid refernces by ID to break.  The setter is provided so that an item can be deserialized from an object with an exisitng ID or provided an exisiting ID immediately after instantiation.",
           "type": "string",
+          "description": "The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element.  Once this ID is set, it should not be changed to avoid refernces by ID to break.  The setter is provided so that an item can be deserialized from an object with an exisitng ID or provided an exisiting ID immediately after instantiation.",
           "langType": {
             "java": "java.util.UUID",
             "js": "cmapi.randomUUID"
           }
         },
         "dataProviderId": {
-          "description": "This is a free form string that can represent an ID specific to this piece of data as it is tracked uniquely by the system providing this data.  This is different from GeoId as the GeoId is of type UUID.  Some systems may use IDs formatted in a way that it cannot be stored in a UUID.  In this case, this property can be used by the system to track this psece of data by the ID they use internally.  The GeoID proerty will be used by CMAPI as the unique ID and this ID is for the benefit of the system providing the data.",
-          "type": "string"
+          "type": "string",
+          "description": "This is a free form string that can represent an ID specific to this piece of data as it is tracked uniquely by the system providing this data.  This is different from GeoId as the GeoId is of type UUID.  Some systems may use IDs formatted in a way that it cannot be stored in a UUID.  In this case, this property can be used by the system to track this psece of data by the ID they use internally.  The GeoID proerty will be used by CMAPI as the unique ID and this ID is for the benefit of the system providing the data."
         },
         "description": {
           "type": "string",
           "description" : "A simple string, or HTML formatted string that can be displayed to describe the IGeoBase.  In the case of a feature the description property can be used to store the content that should display in a pop up window after clicking on a feature.",
           "default": ""
         },
-       "properties": {
+        "properties": {
           "type": "object",
-          "readOnly": true,
           "description": "A key value pair where both the key and value where the key is a unique string and the value is an object that can be stored as and read from a string.  In cases where an IGeoBase will be serialized all of the values will be serialized using the objects toString() method.  It is the resposibility of the applications accessing values stored in the properties hash map to determine if the value is in a string format and convert back to whatever object type the string was derived from.  The object should not contain any references to other objects where that relationship is expected to exist beyond copying a current value of a simple type as the relationship will not be properly restored when deserialization occurs.  CMAPI will not use the properties hash for any internal purpose, it will simply allow 3rd party data to pass additional attributes that will stay associated with the CMAPI object as it moves between applications and systems.",
+          "readOnly": true,
           "langType": {
-            "java": "java.util.HashMap<String, Object>"
+            "java": "java.util.HashMap<String, String>"
           }
         }
       },
       "required": ["name", "geoId", "description"]
     },
     "IGeoContainer": {
-      "description":"Geo containers are designed to be a base interface for anything that can contain a children list of IGeoBase objects.  This facilitates the concept of Containers such as overlays, as well as features such as a point that can contain child features.",
       "type": "object",
+      "description":"Geo containers are designed to be a base interface for anything that can contain a children list of IGeoBase objects.  This facilitates the concept of Containers such as overlays, as well as features such as a point that can contain child features.",
       "allOf": [{
         "$ref": "#/definitions/IGeoBase"
       }, {
         "properties": {
           "children": {
             "type": "array",
-            "readOnly": true,
             "description": "A list of objects that Implment the IGeoBase Interface",
+            "readOnly": true,
             "items": {
               "$ref": "#/definitions/IGeoBase"
             }
@@ -427,14 +429,14 @@
           },
           "extrude": {
             "type": "boolean",
-            "default": false,
-            "description": "A curtain is formed below each point or line segment and extends to the ground"
+            "description": "A curtain is formed below each point or line segment and extends to the ground",
+            "default": false
           },
           "tessellate": {
             "type": "boolean",
-            "default": true,
-            "description": "Value determines if the item will follow the terrain and drape, or follow a straight plane cutting through terrain above the altitude of the line segment.  This property is ignored for single position items."
-          },
+            "description": "Value determines if the item will follow the terrain and drape, or follow a straight plane cutting through terrain above the altitude of the line segment.  This property is ignored for single position items.",
+            "default": true
+            },
           "buffer": {
             "type": "number",
             "description": "Indicates if a buffer object in meters can be applied to a single, or list of positions as an extension outwards from the original position(s)",
@@ -442,6 +444,7 @@
           },
           "azimuth": {
             "type": "number",
+            "description": "The direction a feature will be oriented in degrees",
             "minimum": 0,
             "maximum": 359,
             "default": 0
@@ -451,6 +454,7 @@
       }]
     },
     "IGeoPoint": {
+      "description": "A feature to be represented as a geospatil location with an icon",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
@@ -467,22 +471,25 @@
       }]
     },
     "IGeoText": {
+      "description": "A text annotation with a geospatial location",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }]
     },
     "IGeoPolygon": {
+      "description": "A polygon represented by three or more geospatial locations",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }]
     },
     "IGeoPath": {
+      "description": "A path AKA polyline represented by two or more geospatial locations",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }]
     },
     "IGeoCircle": {
-      "description": "A circular based forma single geospatial location as the center with a radius in meters",
+      "description": "A circular based form a single geospatial location as the center with a radius in meters",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
@@ -497,6 +504,7 @@
       }]
     },
     "IGeoEllipse": {
+      "description": "An ellipse represented by a geospatial center point location with a semi-major and semi-minor radius in meters",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
@@ -516,6 +524,7 @@
       }]
     },
     "IGeoRectangle": {
+      "description" : "A geospatial rectangle represented by a center point location, width and height in meters",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
@@ -535,12 +544,13 @@
       }]
     },
     "IGeoSquare": {
+      "description" : "A geospatial square represented by a center point location and width in meters",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
         "properties": {
           "width": {
-            "description": "Width of the square in meters on the x axis ",
+            "description": "Width of the square in meters on the x and y axis ",
             "type": "number",
             "default": 100
           }
@@ -555,12 +565,13 @@
         "properties": {
           "imageURI": {
             "type": "string",
-            "description": "Indicates the URL to request the image or dataURI encoding of the icon image embedded as the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)"
+            "description": "Indicates the URL to request the image or base 64 dataURI encoding of the icon image embedded as the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)"
           }
         }
       }]
     },
     "IGeoMilSymbol": {
+      "description" : "Feature to represent MIL-STD-2525 B and C symbols for the entire symbology standard",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
@@ -772,7 +783,7 @@
       }]
     },
     "IGeoAirControlMeasure": {
-      "description":"Air control meacusures (ACM) represent a three dimensional volume in the air above earth used to indicate where aircarfat should stay within, or stay out of",
+      "description":"Air control measures (ACM) represent a three dimensional volume in the air above earth used to indicate where aircarfat should stay within, or stay out of",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
@@ -828,7 +839,7 @@
       }]
     },
     "IGeoDocument": {
-      "description": "File containing geospatil feature data in a known format such as KML or GeoJSON",
+      "description": "File containing geospatial feature data in a known format such as KML or GeoJSON",
       "allOf": [{
         "$ref": "#/definitions/IGeoBase"
       }, {
