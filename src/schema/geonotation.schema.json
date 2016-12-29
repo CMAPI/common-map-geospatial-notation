@@ -355,7 +355,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "description": "Name is used to display text labels alongside to a feature and can be used in user interfaces that manage the data on the map",
+          "description": "Name is a human readable string of text that should be able to be displayed in a user interface to allow the user to understand at a high level what this data represents",
           "default": ""
         },
         "geoId": {
@@ -453,8 +453,44 @@
         "required": ["labelStyle"]
       }]
     },
+    "IGeoInstance" : {
+      "type": "object",
+      "description" : "Any IGeoContainer or IGeoRenderable can be a child of multiple IGeoContainers.  This allows for different state to be managed at an instance level, while all the primary attributes of the object exist as a reference to the single instance.  Having a single authoratative instance removes the overheaed of managing multiple copies of the same piece of information. ",
+      "properties" : {
+        "name": {
+          "type": "string",
+          "description": "Name is a human readable string of text that should be able to be displayed in a user interface to allow the user to understand at a high level what this data represents",
+          "default": ""
+        },
+        "geoId": {
+          "type": "string",
+          "description": "This SHALL match the geoID of the IGeoContainer or IGeoRenderable it is an instance of. The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element.  Once this ID is set, it should not be changed to avoid references by ID to break.  The setter is provided so that an item can be deserialized from an object with an exisitng ID or provided an exisiting ID immediately after instantiation.",
+          "langType": {
+            "java": "java.util.UUID",
+            "js": "cmapi.randomUUID"
+          }
+        },
+        "parentGeoId": {
+          "type": "string",
+          "description": "This represents the GeoID of the IGeoContainer this instance is a child of.  It is possible for a single IGeoRenderable to be a child of multiple IGeoContainers. The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element.  Once this ID is set, it should not be changed to avoid references by ID to break.  The setter is provided so that an item can be deserialized from an object with an exisitng ID or provided an exisiting ID immediately after instantiation.",
+          "langType": {
+            "java": "java.util.UUID",
+            "js": "cmapi.randomUUID"
+          }
+        },
+        "dataProviderId": {
+          "type": "string",
+          "description": "This is a free form string that can represent an ID specific to this piece of data as it is tracked uniquely by the system providing this data.  This is different from GeoId as the GeoId is of type UUID.  Some systems may use IDs formatted in a way that it cannot be stored in a UUID.  In this case, this property can be used by the system to track this psece of data by the ID they use internally.  The geoID proerty will be used by CMAPI as the unique ID and this ID is for the benefit of the system providing the data."
+        },
+        "visibility" : {
+          "type" : "boolean",
+          "description" : "Indicates if this instance of an IGeoRenderable is visible based on its parent's visibility and instance visibility",
+          "default" : true
+        }
+      }
+    },
     "IGeoPoint": {
-      "description": "A feature to be represented as a geospatil location with an icon",
+      "description": "A feature to be represented as a geospatial location with an icon",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
@@ -489,7 +525,7 @@
       }]
     },
     "IGeoCircle": {
-      "description": "A circular based form a single geospatial location as the center with a radius in meters",
+      "description": "A circle derived from a single geospatial location as the center with a radius in meters",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
@@ -504,7 +540,7 @@
       }]
     },
     "IGeoEllipse": {
-      "description": "An ellipse represented by a geospatial center point location with a semi-major and semi-minor radius in meters",
+      "description": "An ellipse derived from a single geospatial center point location with a semi-major and semi-minor radius in meters",
       "allOf": [{
         "$ref": "#/definitions/IGeoRenderable"
       }, {
@@ -855,7 +891,255 @@
         },
         "required": ["documentURI", "documentType"]
       }]
+    },
+    "IGeoProduct" : {
+      "description" : "A product is a currated IGeoContainer with an additional tags property to allow for filtering",
+      "allOf": [{
+        "$ref": "#/definitions/IGeoBase"
+      }, {
+        "properties": {
+          "tags": {
+            "description": "URL the document should be loaded from, or a dataURI encoding of the resource embedded as the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)",
+            "type": "array",
+            "items": [{
+              "description" : "Simple text descriptors that can be used for filtering and categorization",
+              "type" : "string"
+            }]
+          },
+          "productOwnerId" : {
+            "description" : "Unique id representing the ID of the application managing this data product.  This id should be consistent for every product managed by a system or application.  It allows for grouping products by the system or application managing the product. The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.",
+            "type" : "string",
+            "langType": {
+              "java": "java.util.UUID",
+              "js": "cmapi.randomUUID"
+            }
+          }
+        },
+        "required": ["tags", "productOwnerId"]
+      }]
+    },
+    "IGeoMessage": {
+      "description": "Generic envelope for all messages",
+      "properties": {
+        "channel": {
+          "description": "The unique name of the channel the message is being sent over",
+          "type": "string"
+        },
+        "senderId" : {
+          "type" : "string",
+          "description": "Id of the attached client sending the message. The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element.  Once this ID is set, it should not be changed to avoid refernces by ID to break.",
+          "langType": {
+            "java": "java.util.UUID",
+            "js": "cmapi.randomUUID"
+          }
+        },
+        "messageId" : {
+          "type" : "string",
+          "description": "The messageId is used to coorelate multiple messages that may occur as a result of another message such as acknowledgements, status, or messagin that requires multiple steps to complete an overall task. The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All messageId values that match will be treated as related messages.",
+          "langType": {
+            "java": "java.util.UUID",
+            "js": "cmapi.randomUUID"
+          }
+        },
+        "version" : {
+          "description" : "Version of the CMAPI message format being used.  This should not be changed from the default value",
+          "type" : "object",
+          "properties" : {
+            "major" : {
+              "type" : "number",
+              "format" : "int",
+              "default" : 2
+            },
+            "minor" : {
+              "type" : "number",
+              "format" : "int",
+              "default" : 0
+            },
+            "patch" : {
+              "type" : "number",
+              "format" : "int",
+              "default" : 0
+            },
+            "status" : {
+              "enum" : ["alpha","beta","stable","release"],
+              "default" : "alpha"
+            }         
+          },
+         "readOnly" : true
+        }
+      },
+      "required": ["channel", "senderId", "messageId"]
     }
+  },
+  "channels" : {
+    "products/list": {
+      "type": "object",
+      "description": "Get a list of advertised products.  Products are currated IGeoContainers with a set of child IGeoContainers and IGeoRenderables organized for a specific purpose and context.  for example a product could be a single IGeoContainer with a a list of IGeoPoint objects describing all the current ship locations for a shipping company",
+      "properties": {
+        "products": {
+            "type": "array",
+            "description": "A list of IGeoProducts",
+            "items": {
+              "$ref": "#/definitions/IGeoProduct"
+            }
+          }
+      },
+      "required": ["products"]
+    },
+    "products/create": {
+      "type": "object",
+      "description": "Get a list of advertised products.  Products are currated IGeoContainers with a set of child IGeoContainers and IGeoRenderables organized for a specific purpose and context.  For example, a product could be a single IGeoContainer with a a list of IGeoPoint objects describing all the current ship locations for a shipping company",
+      "action" : "GET",
+      "properties": {
+        "product": {
+            "description": "IGeoProduct to be created",
+            "allOf": [{
+              "$ref": "#/definitions/IGeoProduct"
+            }] 
+          }
+      },
+      "required": ["product"]
+    },
+    "products/{productId}/remove": {
+      "type": "object",
+      "description": "Remove a Product form the list of advertised products.",
+      "action" : "DELETE",
+      "properties": {
+        "productGeoId": {
+          "description": "The ID of the product to be removed. The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All messageId values that match will be treated as related messages.",
+          "type": "string",
+          "langType": {
+            "java": "java.util.UUID",
+            "js": "cmapi.randomUUID"
+          }
+        }
+      },
+      "required": ["product"]
+    },
+    "products/{productId}/containers/associate": {
+      "type": "object",
+      "description": "Associate an IGeoContainer as a child of the product specified with the product ID.  Both the Product and the feature",
+      "action" : "PUT",
+      "properties": {
+        "contentGeoId": {
+          "description": "The ID of the IGeoContainer of IGeoRenderable to be associated with this product. The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.",
+          "type": "string",
+          "langType": {
+            "java": "java.util.UUID",
+            "js": "cmapi.randomUUID"
+          }
+        },
+        "productGeoId": {
+          "description": "The ID of the product content will be associated with. The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.",
+          "type": "string",
+          "langType": {
+            "java": "java.util.UUID",
+            "js": "cmapi.randomUUID"
+          }
+        }
+      },
+      "required": ["product"]
+    }
+  },
+  "products/{productId}/containers/list": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "products/{productId}/containers/{containerGeoId}/renderables/list": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "products/{productId}/containers/{containerGeoId}/containers/list": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "products/{productId}/subscribe": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "products/{productId}/unsubscribe": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "collaborations/list": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "collaborations/create": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "collaborations/{collaborationId}/remove": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "feature/list": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "feature/get": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "feature/create": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "feature/update": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "feature/remove": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "feature/content/attach": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "feature/content/detach": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "overlay/create": {
+    "type": "object",
+    "description": "",
+    "properties": {}
+  },
+  "overlay/update": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "overlay/remove": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "overlay/content/attach": {
+      "type": "object",
+      "description": "",
+      "properties": {}
+  },
+  "product/content/detach": {
+      "type": "object",
+      "description": "",
+      "properties": {}
   },
   "type": "object",
   "anyOf": [{
