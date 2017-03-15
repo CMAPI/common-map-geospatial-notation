@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <p id="demo"></p>
+    <script src="dist/js/cmapi.js"></script>
+    <script>
+    var cmapi = cmapi || {};
+
+    cmapi.base = function() {
+        this.patchProps = function(update) {
+            var prop;
+            for (prop in update) {
+                if (this.hasOwnProperty(prop)) {
+                    this[prop] = update[prop];
+                }
+            }
+        };
+
+        this.inherit = function(source) {
+            var prop;
+            for (prop in source) {
+                this[prop] = source[prop];
+            }
+        }
+    }
+
+
+    function Polygon(args) {
+        cmapi.inherit(new cmapi.GeoCamera(), this);
+
+        var _height = 0;
+        Object.defineProperty(this, "height", {
+
+            enumerable: true,
+            get: function() {
+                return _height;
+            },
+
+            set: function(value) {
+                if (typeof value === "number" && value > 0 && value < 100) {
+                    _height = value;
+                } else {
+                    console.error(new Error("newObj().height: Value must be between 0 and 99. Value will be set to default"))
+                }
+            }
+
+        });
+        if (args) {
+            this.patchProps(args);
+        }
+        this.apply = function() {
+            alert("applying: " + this.name);
+        }
+    }
+
+    var myinst = new Polygon({
+        name: "xtaco",
+        height: 99
+    });
+    alert(JSON.stringify(myinst));
+
+    function Polygon2(args) {
+        cmapi.inherit(new Polygon(), this);
+        if (args) {
+            this.patchProps(args);
+        }
+    }
+
+    var myinst2 = new Polygon2({
+        name: "Polygon2",
+        height: 67
+    });
+    alert(JSON.stringify(myinst2));
+    myinst2.apply();
+    </script>
+</body>
+
+</html>

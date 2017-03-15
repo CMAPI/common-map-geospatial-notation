@@ -1,11 +1,13 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
+  "interfaces" : {},
   "definitions": {
     "IGeoAltitudeMode": {
       "properties": {
         "altitudeMode": {
           "enum": ["CLAMP_TO_GROUND", "RELATIVE_TO_GROUND", "ABSOLUTE"],
-          "description" : "Enumeration of altitude modes to define how the altitude value in an IGeoPosition alt (altitude) property will be interpreted"
+          "description" : "Enumeration of altitude modes to define how the altitude value in an IGeoPosition alt (altitude) property will be interpreted",
+          "protoIndex" : 1
         }
       }
     },
@@ -16,12 +18,14 @@
         "begin": {
           "type": "string",
           "format": "date-time",
-          "description": "Starting date time value as defined by http://tools.ietf.org/html/rfc3339"
+          "description": "Starting date time value as defined by http://tools.ietf.org/html/rfc3339",
+          "protoIndex" : 2
         },
         "end": {
           "type": "string",
           "format": "date-time",
-          "description": "Ending date time value as defined by http://tools.ietf.org/html/rfc3339"
+          "description": "Ending date time value as defined by http://tools.ietf.org/html/rfc3339",
+          "protoIndex" : 3
         }
       },
       "required": ["begin", "end"]
@@ -35,19 +39,22 @@
           "description": "Latitude value in degrees decimal (i.e. 23.4567) derived from WGS-84",
           "minimum": -90,
           "maximum": 90,
-          "default": 0
+          "default": 0,
+          "protoIndex" : 4
         },
         "longitude": {
           "type": "number",
           "description": "Longitude value in degrees decimal (i.e. 23.4567) derived from WGS-84",
           "minimum": -180,
           "maximum": 180,
-          "default": 0
+          "default": 0,
+          "protoIndex" : 5
         },
         "altitude": {
           "type": "number",
           "description": "A value in meters representing the altitude of the associated position.  This will be interpreted base on the altitudeMode provided in the IGeoAltitudeMode enumeration",
-          "default": 0
+          "default": 0,
+          "protoIndex" : 6
         }
       },
       "required": ["latitude", "longitude", "altitude"]
@@ -62,6 +69,7 @@
           "positions": {
             "type": "array",
             "description": "An ordered list of IGeoPosition objects representing a 1 or more positions with an associated IGeoAltitudeMode to interpret the altitude values.  In the case of a point, a single position will create a single icon, wheras mulitple positions will create the same icon at multiple positions to be interpreted as a composite feature. For consistency, and IGeoRenderables use an IGeoPositionGroup even when only containing a single positions",
+            "protoIndex" : 7,
             "items": {
               "$ref": "#/definitions/IGeoPosition"
             }
@@ -69,11 +77,13 @@
           "timeStamp": {
             "type": "string",
             "format": "date-time",
-            "description": "Defines a point in time that something occurred, was created, or was last updated time value as defined by http://tools.ietf.org/html/rfc3339"
+            "description": "Defines a point in time that something occurred, was created, or was last updated time value as defined by http://tools.ietf.org/html/rfc3339",
+            "protoIndex" : 8
           },
           "timeSpans": {
             "type": "array",
             "description": "Defines one or more periods of time something occured, or was active.",
+            "protoIndex" : 9,
             "items": {
               "$ref": "#/definitions/IGeoTimeSpan"
             }
@@ -88,6 +98,8 @@
       "properties": {
         "positionHistory": {
           "type": "array",
+          "description": "An ordered collection of IGeoPositionGroup objects",
+          "protoIndex" : 10,
           "items": {
             "$ref": "#/definitions/IGeoPositionGroup"
           }
@@ -106,6 +118,7 @@
           "tilt": {
             "type": "number",
             "description": "Rotation, in degrees, of the camera around the X axis. A value of 0 indicates that the view is aimed straight down toward the earth (the most common case). A value for 90 for <tilt> indicates that the view is aimed toward the horizon. Values greater than 90 indicate that the view is pointed up into the sky. Values for <tilt> are clamped at +180 degrees",
+            "protoIndex" : 11,
             "minimum": 0,
             "maximum": 179,
             "default": 0
@@ -113,6 +126,7 @@
           "roll": {
             "type": "number",
             "description": "Rotation, in degrees, of the camera around the Z axis. Values range from −180 to +180 degrees",
+            "protoIndex" : 12,
             "minimum": 0,
             "maximum": 179,
             "default": 0
@@ -120,6 +134,7 @@
           "heading": {
             "type": "number",
             "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). Values range from 0 to 360 degrees",
+            "protoIndex" : 13,
             "minimum": 0,
             "maximum": 359,
             "default": 0
@@ -140,6 +155,7 @@
           "tilt": {
             "type": "number",
             "description": "Rotation, in degrees, of the camera around the X axis. A value of 0 indicates that the view is aimed straight down toward the earth (the most common case). A value for 90 for <tilt> indicates that the view is aimed toward the horizon. Values greater than 90 indicate that the view is pointed up into the sky. Values for <tilt> are clamped at +180 degrees. ",
+            "protoIndex" : 14,
             "minimum": 0,
             "maximum": 179,
             "default": 0
@@ -147,6 +163,7 @@
           "heading": {
             "type": "number",
             "description": "Direction (that is, North, South, East, West), in degrees. Default=0 (North). Values range from 0 to 360 degrees",
+            "protoIndex" : 15,
             "minimum": 0,
             "maximum": 359.99,
             "default": 0
@@ -154,6 +171,7 @@
           "range": {
             "type": "number",
             "description": "Distance in meters from the point specified by IGeoPosition to the LookAt position",
+            "protoIndex" : 16,
             "default": 1000000
           }
         }
@@ -167,24 +185,28 @@
         "west": {
           "type": "number",
           "description": "The western most longitude of the rectangle",
+          "protoIndex" : 17,
           "minimum": -180,
           "maximum": 180
         },
         "east": {
           "type": "number",
           "description": "The eastern most longitude of the rectangle",
+          "protoIndex" : 18,
           "minimum": -180,
           "maximum": 180
         },
         "north": {
           "type": "number",
           "description": "The nothern most latitude of the rectangle",
+          "protoIndex" : 19,
           "minimum": -90,
           "maximum": 90
         },
         "south": {
           "type": "number",
           "description": "The southern most latitude of the rectangle",
+          "protoIndex" : 20,
           "minimum": -90,
           "maximum": 90
         }
@@ -196,17 +218,21 @@
       "description": "List of objects that describe the overall view of a map",
       "properties": {
         "camera": {
-          "$ref": "#/definitions/IGeoCamera"
+          "$ref": "#/definitions/IGeoCamera",
+          "protoIndex" : 46
         },
         "lookAt": {
-          "$ref": "#/definitions/IGeoLookAt"
+          "$ref": "#/definitions/IGeoLookAt",
+          "protoIndex" : 47
         },
         "bounds": {
-          "$ref": "#/definitions/IGeoBounds"
+          "$ref": "#/definitions/IGeoBounds",
+          "protoIndex" : 48
         },
         "scale": {
           "type": "number",
-          "description": "Approximate map scale of current view"
+          "description": "Approximate map scale of current view",
+          "protoIndex" : 21
         }
       }
     },
@@ -218,6 +244,7 @@
           "type": "number",
           "format":"int",
           "description":"Value for red color channel. Integer ranging between 0 and 255",
+          "protoIndex" : 22,
           "minimum": 0,
           "maximum": 255,
           "default": 0
@@ -226,6 +253,7 @@
           "type": "number",
           "format":"int",
           "description":"Value for green color channel. Integer ranging between 0 and 255",
+          "protoIndex" : 23,
           "minimum": 0,
           "maximum": 255,
           "default": 0
@@ -234,6 +262,7 @@
           "type": "number",
           "format":"int",
           "description":"Value for blue color channel. Integer ranging between 0 and 255",
+          "protoIndex" : 24,
           "minimum": 0,
           "maximum": 255,
           "default": 0
@@ -241,6 +270,7 @@
         "alpha": {
           "type": "number",
           "description":"Value for alpha channel to control opacity. Decimal ranging from 0 to 1",
+          "protoIndex" : 25,
           "minimum": 0,
           "maximum": 1,
           "default": 0.8
@@ -253,18 +283,21 @@
       "description":"Style attributes for strokes",
       "properties": {
         "strokeColor": {
-          "$ref": "#/definitions/IGeoColor"
+          "$ref": "#/definitions/IGeoColor",
+          "protoIndex" : 45
         },
         "stipplingPattern": {
           "type": "number",
           "format":"short",
           "description": "specifies a number whose lower 16 bits define a pattern of which pixels in the image are white and which are transparent. Each bit corresponds to a pixel, and the pattern repeats after every n*16 pixels, where n is the factor. For example, if the factor is 3, each bit in the pattern is repeated three times before using the next bit",
+          "protoIndex" : 26,
           "default": 0
         },
         "stipplingFactor": {
           "type": "number",
           "format": "int",
           "description": "specifies the number of times each bit in the pattern is repeated before the next bit is used. For example, if the factor is 3, each bit is repeated three times before using the next bit. The specified factor must be either 0 or an integer greater than 0. A factor of 0 indicates no stippling",
+          "protoIndex" : 27,
           "langType": {
             "java": "int"
           },
@@ -273,6 +306,7 @@
         "strokeWidth": {
           "type": "number",
           "description": "Width of the stroke on the screen in pixels",
+          "protoIndex" : 28,
           "default": 3
         }
       },
@@ -282,14 +316,16 @@
       "type": "object",
       "description" : "Style properties for the fill of a feature.  This can either be the interior of a shape such as a polygon or circle, or can also be applied to the fill of an a MIL-STD-2525 Icon to override the default affiliation color",
       "properties": {
-        "description":"The interior color of a feature such as a polygon or circle.  The fill and stroke can be set separtely to create a contract between the stroke and fill of any feature",
         "fillColor": {
+          "description":"The interior color of a feature such as a polygon or circle.  The fill and stroke can be set separtely to create a contract between the stroke and fill of any feature",
+          "protoIndex" : 43,
           "$ref": "#/definitions/IGeoColor"
         },
         "fillPattern": {
           "description": "Fill patterns allow for alternatives to a solid fill color",
-          "enum": ["solid", "hatched", "crossHatched"],
-          "default": "solid"
+          "protoIndex" : 44,
+          "enum": ["SOLID", "HATCHED", "CROSS_Hatched"],
+          "default": "SOLID"
         }
       },
       "required": ["fillColor", "fillPatern"]
@@ -301,17 +337,20 @@
         "size": {
           "type": "number",
           "description": "Size in pixels at 96 ppi.  If the system rendering the text is running at a screen resolution other than 96 ppi, a translation should be done to make the icon larger of smaller to represent the same amount of physical space as if the screen were at 96 ppi. If the icon is not square, the size will represent the larger value of the rectangle",
+          "protoIndex" : 29,
           "minimum": 1,
           "default": 32
         },
         "offSetX": {
           "type": "number",
           "description": "X Offest of icon in pixels derived from the lower left point of the icon",
+          "protoIndex" : 30,
           "default": 0
         },
         "offSetY": {
           "type": "number",
           "description": "X Offest of icon in pixels derived from the lower left point of the icon",
+          "protoIndex" : 31,
           "default": 0
         }
       },
@@ -324,25 +363,31 @@
         "size": {
           "type": "number",
           "description": "Size of the font in pixels asumming 96 ppi. If the system rendering the text is running at a screen resolution other than 96 ppi, a translation should be done to make the text larger of smaller to represent the same amount of physical space as if the screen were at 96 ppi.  For example if the screen resolution of the target device rednering the text is 126 ppi, you would use the following formula to get a proper pixel value: ( devicePixelsPerInch / 96 ) x IGeoLabelStyle.size = ActucalPixelSize or ( 126 / 96 ) * 12 = 16",
+          "protoIndex" : 32,
           "default": 12
         },
         "color": {
-          "$ref": "#/definitions/IGeoColor"
+          "$ref": "#/definitions/IGeoColor",
+          "protoIndex" : 33
         },
         "outlineColor": {
-          "$ref": "#/definitions/IGeoColor"
+          "$ref": "#/definitions/IGeoColor",
+          "protoIndex" : 34
         },
         "justification": {
           "description": "Position to align text in relation to the associated geospatial coordinate",
+          "protoIndex" : 35,
           "enum": ["LEFT", "CENTER", "RIGHT"],
           "default": "LEFT"
         },
         "fontFamily": {
           "type": "string",
-          "description": "Name of the font family to be used.  In the case that the system rendering this text does not have the font family, it shall use a defalt font and still display the text"
+          "description": "Name of the font family to be used.  In the case that the system rendering this text does not have the font family, it shall use a defalt font and still display the text",
+          "protoIndex" : 36
         },
         "typeface" : {
           "description" : "Typeface design to be used for the font",
+          "protoIndex" : 37,
           "enum": ["REGULAR", "BOLD", "ITALIC", "BOLDITALIC"],
           "default": "REGULAR"
         }
@@ -356,11 +401,13 @@
         "name": {
           "type": "string",
           "description": "Name is a human readable string of text that should be able to be displayed in a user interface to allow the user to understand at a high level what this data represents",
+          "protoIndex" : 38,
           "default": ""
         },
         "geoId": {
           "type": "string",
           "description": "The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element.  Once this ID is set, it should not be changed to avoid refernces by ID to break.  The setter is provided so that an item can be deserialized from an object with an exisitng ID or provided an exisiting ID immediately after instantiation.",
+          "protoIndex" : 39,
           "langType": {
             "java": "java.util.UUID",
             "js": "cmapi.randomUUID"
@@ -368,16 +415,19 @@
         },
         "dataProviderId": {
           "type": "string",
-          "description": "This is a free form string that can represent an ID specific to this piece of data as it is tracked uniquely by the system providing this data.  This is different from GeoId as the GeoId is of type UUID.  Some systems may use IDs formatted in a way that it cannot be stored in a UUID.  In this case, this property can be used by the system to track this psece of data by the ID they use internally.  The GeoID proerty will be used by CMAPI as the unique ID and this ID is for the benefit of the system providing the data."
+          "description": "This is a free form string that can represent an ID specific to this piece of data as it is tracked uniquely by the system providing this data.  This is different from GeoId as the GeoId is of type UUID.  Some systems may use IDs formatted in a way that it cannot be stored in a UUID.  In this case, this property can be used by the system to track this psece of data by the ID they use internally.  The GeoID proerty will be used by CMAPI as the unique ID and this ID is for the benefit of the system providing the data.",
+          "protoIndex" : 40
         },
         "description": {
           "type": "string",
           "description" : "A simple string, or HTML formatted string that can be displayed to describe the IGeoBase.  In the case of a feature the description property can be used to store the content that should display in a pop up window after clicking on a feature.",
+          "protoIndex" : 41,
           "default": ""
         },
         "properties": {
           "type": "object",
           "description": "A key value pair where both the key and value where the key is a unique string and the value is an object that can be stored as and read from a string.  In cases where an IGeoBase will be serialized all of the values will be serialized using the objects toString() method.  It is the resposibility of the applications accessing values stored in the properties hash map to determine if the value is in a string format and convert back to whatever object type the string was derived from.  The object should not contain any references to other objects where that relationship is expected to exist beyond copying a current value of a simple type as the relationship will not be properly restored when deserialization occurs.  CMAPI will not use the properties hash for any internal purpose, it will simply allow 3rd party data to pass additional attributes that will stay associated with the CMAPI object as it moves between applications and systems.",
+          "protoIndex" : 42,
           "readOnly": true,
           "langType": {
             "java": "java.util.HashMap<String, String>"
@@ -396,6 +446,7 @@
           "children": {
             "type": "array",
             "description": "A list of objects that Implment the IGeoBase Interface",
+            "protoIndex" : 49,
             "readOnly": true,
             "items": {
               "$ref": "#/definitions/IGeoBase"
@@ -404,6 +455,7 @@
           "readOnly": {
             "type": "boolean",
             "description": "Indicates if the object is intended to be read only (true) or allow changes to the values ot its properties (false)",
+            "protoIndex" : 50,
             "default": false
           }
         },
@@ -419,32 +471,39 @@
       }, {
         "properties": {
           "labelStyle": {
-            "$ref": "#/definitions/IGeoLabelStyle"
+            "$ref": "#/definitions/IGeoLabelStyle",
+            "protoIndex" : 51
           },
           "strokeStyle": {
-            "$ref": "#/definitions/IGeoStrokeStyle"
+            "$ref": "#/definitions/IGeoStrokeStyle",
+            "protoIndex" : 52
           },
           "fillStyle": {
-            "$ref": "#/definitions/IGeoFillStyle"
+            "$ref": "#/definitions/IGeoFillStyle",
+            "protoIndex" : 53
           },
           "extrude": {
             "type": "boolean",
             "description": "A curtain is formed below each point or line segment and extends to the ground",
+            "protoIndex" : 54,
             "default": false
           },
           "tessellate": {
             "type": "boolean",
             "description": "Value determines if the item will follow the terrain and drape, or follow a straight plane cutting through terrain above the altitude of the line segment.  This property is ignored for single position items.",
+            "protoIndex" : 55,
             "default": true
             },
           "buffer": {
             "type": "number",
             "description": "Indicates if a buffer object in meters can be applied to a single, or list of positions as an extension outwards from the original position(s)",
+            "protoIndex" : 56,
             "default": 0
           },
           "azimuth": {
             "type": "number",
             "description": "The direction a feature will be oriented in degrees",
+            "protoIndex" : 57,
             "minimum": 0,
             "maximum": 359,
             "default": 0
@@ -460,11 +519,22 @@
         "name": {
           "type": "string",
           "description": "Name is a human readable string of text that should be able to be displayed in a user interface to allow the user to understand at a high level what this data represents",
+          "protoIndex" : 58,
           "default": ""
         },
         "geoId": {
           "type": "string",
           "description": "This SHALL match the geoID of the IGeoContainer or IGeoRenderable it is an instance of. The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element.  Once this ID is set, it should not be changed to avoid references by ID to break.  The setter is provided so that an item can be deserialized from an object with an exisitng ID or provided an exisiting ID immediately after instantiation.",
+          "protoIndex" : 59,
+          "langType": {
+            "java": "java.util.UUID",
+            "js": "cmapi.randomUUID"
+          }
+        },
+        "instanceGeoId": {
+          "type": "string",
+          "description": "All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element.  Once this ID is set, it should not be changed to avoid references by ID to break.  The setter is provided so that an item can be deserialized from an object with an exisitng ID or provided an exisiting ID immediately after instantiation.",
+          "protoIndex" : 60,
           "langType": {
             "java": "java.util.UUID",
             "js": "cmapi.randomUUID"
@@ -473,6 +543,7 @@
         "parentGeoId": {
           "type": "string",
           "description": "This represents the GeoID of the IGeoContainer this instance is a child of.  It is possible for a single IGeoRenderable to be a child of multiple IGeoContainers. The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element.  Once this ID is set, it should not be changed to avoid references by ID to break.  The setter is provided so that an item can be deserialized from an object with an exisitng ID or provided an exisiting ID immediately after instantiation.",
+          "protoIndex" : 61,
           "langType": {
             "java": "java.util.UUID",
             "js": "cmapi.randomUUID"
@@ -480,11 +551,13 @@
         },
         "dataProviderId": {
           "type": "string",
-          "description": "This is a free form string that can represent an ID specific to this piece of data as it is tracked uniquely by the system providing this data.  This is different from GeoId as the GeoId is of type UUID.  Some systems may use IDs formatted in a way that it cannot be stored in a UUID.  In this case, this property can be used by the system to track this psece of data by the ID they use internally.  The geoID proerty will be used by CMAPI as the unique ID and this ID is for the benefit of the system providing the data."
+          "description": "This is a free form string that can represent an ID specific to this piece of data as it is tracked uniquely by the system providing this data.  This is different from GeoId as the GeoId is of type UUID.  Some systems may use IDs formatted in a way that it cannot be stored in a UUID.  In this case, this property can be used by the system to track this psece of data by the ID they use internally.  The geoID proerty will be used by CMAPI as the unique ID and this ID is for the benefit of the system providing the data.",
+          "protoIndex" : 62
         },
         "visibility" : {
           "type" : "boolean",
           "description" : "Indicates if this instance of an IGeoRenderable is visible based on its parent's visibility and instance visibility",
+          "protoIndex" : 63,
           "default" : true
         }
       }
@@ -496,11 +569,13 @@
       }, {
         "properties": {
           "iconStyle": {
-            "$ref": "#/definitions/IGeoIconStyle"
+            "$ref": "#/definitions/IGeoIconStyle",
+            "protoIndex" : 64
           },
           "iconURI": {
             "type": "string",
-            "description": "Indicates the URL to request the icon image image or dataURI encoding of the icon image embedded as the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)"
+            "description": "Indicates the URL to request the icon image image or dataURI encoding of the icon image embedded as the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)",
+            "protoIndex" : 65
           }
         },
         "required": ["iconStyle"]
@@ -532,6 +607,7 @@
         "properties": {
           "radius": {
             "description": "Radius of the circle in meters",
+            "protoIndex" : 66,
             "type": "number",
             "default": 100
           }
@@ -547,11 +623,13 @@
         "properties": {
           "semiMajor": {
             "description": "The magnitude of the semi-major axis - Radius of the ellipse in meters on the x axis (width)",
+            "protoIndex" : 67,
             "type": "number",
             "default": 150
           },
           "semiMinor": {
             "description": "The magnitude of the semi-minor axis - Radius of the ellipse in meters on the y axis (height)",
+            "protoIndex" : 68,
             "type": "number",
             "default": 75
           }
@@ -567,11 +645,13 @@
         "properties": {
           "width": {
             "description": "Width of the rectangle in meters on the x axis",
+            "protoIndex" : 69,
             "type": "number",
             "default": 150
           },
           "height": {
             "description": "Height of the rectangle in meters on the y axis",
+            "protoIndex" : 70,
             "type": "number",
             "default": 75
           }
@@ -587,6 +667,7 @@
         "properties": {
           "width": {
             "description": "Width of the square in meters on the x and y axis ",
+            "protoIndex" : 71,
             "type": "number",
             "default": 100
           }
@@ -601,7 +682,8 @@
         "properties": {
           "imageURI": {
             "type": "string",
-            "description": "Indicates the URL to request the image or base 64 dataURI encoding of the icon image embedded as the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)"
+            "description": "Indicates the URL to request the image or base 64 dataURI encoding of the icon image embedded as the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)",
+            "protoIndex" : 72
           }
         }
       }]
@@ -614,16 +696,20 @@
         "properties": {
           "symbolStandard": {
             "description": "Version of the MIL-STD-2525 standard to use",
+            "protoIndex" : 73,
             "enum": ["MIL_STD_2525C", "MIL_STD_2525B"],
             "default": "MIL_STD_2525C"
           },
           "symbolCode": {
             "description": "Symbol code as defined by MIL-STD-2525",
+            "protoIndex" : 74,
             "type": "string",
             "default": "SUGP-----------"
           },
           "modifiers": {
             "type": "object",
+            "description" : "A list of modifier key value pairs as defined in the MIL-STD-2525 specification for modifying the attributes of a given symbol code",
+            "protoIndex" : 75,
             "langType": {
               "java": "java.util.HashMap<IGeoMilSymbol.Modifier, String>"
             },
@@ -826,10 +912,12 @@
         "properties": {
           "acmType": {
             "description": "Type of air control measure to create",
+            "protoIndex" : 76,
             "enum": ["ROUTE", "CYLINDER", "ORBIT", "POLYGON", "RADARC", "POLYARC", "TRACK", "CURTAIN"]
           },
           "attributes": {
             "type": "object",
+            "protoIndex" : 77,
             "langType": {
               "java": "java.util.HashMap<IGeoAirControlMeasure.Attribute, String>"
             },
@@ -882,10 +970,12 @@
         "properties": {
           "documentURI": {
             "description": "URL the document should be loaded from, or a dataURI encoding of the resource embedded as the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)",
+            "protoIndex" : 77,
             "type": "string"
           },
           "documentMIMEType": {
             "description": "MIME Type of document.  Common Types are KML (application/vnd.google-earth.kml+xml), and GeoJSON (application/vnd.geo+json)",
+            "protoIndex" : 78,
             "type": "string"
           }
         },
@@ -899,15 +989,14 @@
       }, {
         "properties": {
           "tags": {
-            "description": "URL the document should be loaded from, or a dataURI encoding of the resource embedded as the value defined by RFC 2397 (see https://tools.ietf.org/html/rfc2397)",
-            "type": "array",
-            "items": [{
-              "description" : "Simple text descriptors that can be used for filtering and categorization",
-              "type" : "string"
-            }]
+            "description": "A comma delimted list of strings that can be used for filtering and searching",
+            "protoIndex" : 79,
+            "type": "string"
+          
           },
           "productOwnerId" : {
             "description" : "Unique id representing the ID of the application managing this data product.  This id should be consistent for every product managed by a system or application.  It allows for grouping products by the system or application managing the product. The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.",
+            "protoIndex" : 80,
             "type" : "string",
             "langType": {
               "java": "java.util.UUID",
@@ -918,16 +1007,55 @@
         "required": ["tags", "productOwnerId"]
       }]
     },
-    "IGeoMessage": {
+    "IGeoVersion":{
+      "description" : "Version of the CMAPI message format being used.  This should not be changed from the generated default value.  Versioning follows semantic versioning which can be found at http://semver.org/",
+      "type" : "object",
+      "properties" : {
+        "major" : {
+          "type" : "number",
+          "description" : "",
+          "protoIndex" : 81,
+          "format" : "int",
+          "default" : 2,
+          "readOnly" : true
+        },
+        "minor" : {
+          "type" : "number",
+          "description" : "",
+          "protoIndex" : 82,
+          "format" : "int",
+          "default" : 0,
+          "readOnly" : true
+        },
+        "patch" : {
+          "type" : "number",
+          "description" : "",
+          "protoIndex" : 83,
+          "format" : "int",
+          "default" : 0,
+          "readOnly" : true
+        },
+        "status" : {
+          "enum" : ["ALPHA","BETA","STABLE","RELEASE"],
+          "description" : "",
+          "protoIndex" : 84,
+          "default" : "ALPHA",
+          "readOnly" : true
+        }         
+      }
+    },
+    "IGeoMessageEnvelope": {
       "description": "Generic envelope for all messages",
       "properties": {
         "channel": {
           "description": "The unique name of the channel the message is being sent over",
+          "protoIndex" : 85,
           "type": "string"
         },
         "senderId" : {
           "type" : "string",
           "description": "Id of the attached client sending the message. The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All id values SHALL be unique regardless of type and conflicting id values will be treated as the same element.  Once this ID is set, it should not be changed to avoid refernces by ID to break.",
+          "protoIndex" : 86,
           "langType": {
             "java": "java.util.UUID",
             "js": "cmapi.randomUUID"
@@ -936,6 +1064,7 @@
         "messageId" : {
           "type" : "string",
           "description": "The messageId is used to coorelate multiple messages that may occur as a result of another message such as acknowledgements, status, or messagin that requires multiple steps to complete an overall task. The id value should be a UUID (see https://www.ietf.org/rfc/rfc4122.txt) to avoid conflict of data from multiple sources.  All messageId values that match will be treated as related messages.",
+          "protoIndex" : 87,
           "langType": {
             "java": "java.util.UUID",
             "js": "cmapi.randomUUID"
@@ -943,29 +1072,18 @@
         },
         "version" : {
           "description" : "Version of the CMAPI message format being used.  This should not be changed from the default value",
+          "protoIndex" : 88,
+          "$ref" : "#/definitions/IGeoVersion",        
+          "readOnly" : true
+        },
+        "payload": {
+          "description" : "Version of the CMAPI message format being used.  This should not be changed from the default value",
+          "protoIndex" : 89,
           "type" : "object",
-          "properties" : {
-            "major" : {
-              "type" : "number",
-              "format" : "int",
-              "default" : 2
-            },
-            "minor" : {
-              "type" : "number",
-              "format" : "int",
-              "default" : 0
-            },
-            "patch" : {
-              "type" : "number",
-              "format" : "int",
-              "default" : 0
-            },
-            "status" : {
-              "enum" : ["alpha","beta","stable","release"],
-              "default" : "alpha"
-            }         
-          },
-         "readOnly" : true
+          "langType" : {
+            "proto" : "bytes",
+            "java" : "byte[]"
+          }
         }
       },
       "required": ["channel", "senderId", "messageId"]
