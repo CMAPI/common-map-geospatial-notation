@@ -448,6 +448,11 @@
             "minimum": 0,
             "maximum": 359,
             "default": 0
+          },
+          "pathType": {
+            "enum": ["GREAT_CIRCLE", "LINEAR", "RHUMB_LINE"],
+            "description" : "Enumeration of path rendering types that affect the way the map will interpret for paths and polygon boundaries. GREAT_CIRCLE - A great circle arc between two locations. LNEAR - Simple linear interpolation between two locations which will paass through ground.  It represents the shortest distance between two points passing through the globe. RHUMB_LINE - A line of constant bearing between two locations.  Default is GREAT_CRICLE",
+            "default" : "GREAT_CIRCLE"
           }
         },
         "required": ["labelStyle"]
