@@ -161,7 +161,7 @@ module.exports = {
 
     if (description) {
 
-      words = description.split(" ")
+      words = description.split(" ");
       for (i = 0; i < words.length; i++) {
         if (curLine.length < lineMax && i < words.length-1) {
           curLine += " " + words[i];
@@ -558,20 +558,5 @@ module.exports = {
       this.createApiInterface(definitions, key, definitions[key]);
       this.createApiPOJO(definitions, key, definitions[key]);
     }
-/*
-    var javac = spawn('javac', ['dist/java/org/cmapi/primitives/*.java']);
-javac.on('close', function(code) {
-    if (code === 0) {
-        var jar = spawn('jar', ['cf', 'org-cmapi-primitives.jar', 'dist/java/org/cmapi/primitives/*.class']);
-        jar.on('close', function(code2) {
-            console.log(code2 + " <- this is the code!");
-            var javadoc = spawn('javadoc', ['-d', 'dist/java/org/cmapi/primitives/docs', '-sourcepath', 'dist/java/org/cmapi/primitives/','org.cmapi.primitives']);
-            javadoc.on('close', function(code3) {
-                console.log(code3 + " <- this is the 3rd code!");
-            });
-        });
-    }
-});
-*/
   }
 };
